@@ -1,0 +1,81 @@
+\contentsline {chapter}{\numberline {1}Mathematical Preliminaries}{1}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Introduction to Numerical Methods}{1}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Error Analysis}{1}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Taylor Series and Approximation}{3}{section.1.3}%
+\contentsline {section}{\numberline {1.4}Number Systems}{5}{section.1.4}%
+\contentsline {section}{\numberline {1.5}IEEE Floating-Point Numbers}{7}{section.1.5}%
+\contentsline {subsection}{\numberline {1.5.1}IEEE 754 Single Precision}{7}{subsection.1.5.1}%
+\contentsline {subsection}{\numberline {1.5.2}IEEE 754 Double Precision}{9}{subsection.1.5.2}%
+\contentsline {section}{\numberline {1.6}Algorithms, Convergence and Accuracy}{10}{section.1.6}%
+\contentsline {chapter}{\numberline {2}Numerical Linear Algebra}{12}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Linear Systems and Direct Methods}{12}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}Gaussian Elimination}{12}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}Pivoting Strategies}{14}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}Matrix Inversion}{15}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}$LU$ Factorisation}{16}{subsection.2.1.4}%
+\contentsline {section}{\numberline {2.2}Iterative Methods for Linear Systems}{17}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Jacobi Method}{17}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Gauss--Seidel Method}{17}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Successive Over-Relaxation}{17}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Conjugate Gradient Method}{20}{subsection.2.2.4}%
+\contentsline {section}{\numberline {2.3}Eigenvalues and Eigenvectors}{21}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Gershgorin Discs}{22}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Power Method}{23}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Inverse and Shifted Inverse Power Methods}{24}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Householder Reduction and the QR Algorithm}{26}{section.2.4}%
+\contentsline {chapter}{\numberline {3}Solution of Equations}{28}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Roots and Locating Roots}{28}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Bracketing Methods}{29}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Bisection Method}{29}{subsection.3.2.1}%
+\contentsline {section}{\numberline {3.3}Open Methods}{30}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Fixed-Point Iteration}{30}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Newton--Raphson Method}{31}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Secant Method}{33}{subsection.3.3.3}%
+\contentsline {section}{\numberline {3.4}Order of Convergence and Acceleration}{33}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}Aitken's $\Delta ^2$ Process}{33}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Steffensen's Method}{34}{subsection.3.4.2}%
+\contentsline {section}{\numberline {3.5}Zeros of Polynomials}{34}{section.3.5}%
+\contentsline {subsection}{\numberline {3.5.1}Müller's Method}{35}{subsection.3.5.1}%
+\contentsline {section}{\numberline {3.6}Systems of Nonlinear Equations}{36}{section.3.6}%
+\contentsline {chapter}{\numberline {4}Interpolation and Polynomial Approximation}{37}{chapter.4}%
+\contentsline {section}{\numberline {4.1}The Interpolation Problem}{37}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Cardinal and Lagrange Polynomials}{37}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Divided Differences and Newton's Formula}{39}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Forward and Backward Differences}{40}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Newton Forward Difference Formula}{40}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Newton Backward Difference Formula}{40}{subsection.4.4.2}%
+\contentsline {chapter}{\numberline {5}Numerical Differentiation and Integration}{43}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Numerical Differentiation}{43}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Richardson Extrapolation}{44}{subsection.5.1.1}%
+\contentsline {section}{\numberline {5.2}Numerical Integration}{45}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Composite Trapezoidal Rule}{46}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Composite Simpson Rule}{47}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Newton--Cotes Rules}{48}{subsection.5.2.3}%
+\contentsline {section}{\numberline {5.3}Romberg Integration}{49}{section.5.3}%
+\contentsline {section}{\numberline {5.4}Gaussian Quadrature}{49}{section.5.4}%
+\contentsline {section}{\numberline {5.5}Adaptive Quadrature}{51}{section.5.5}%
+\contentsline {chapter}{\numberline {6}The Solution of Differential Equations}{53}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Initial-Value Problems}{53}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Euler's Method}{54}{section.6.2}%
+\contentsline {section}{\numberline {6.3}Improved Euler Method}{56}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Taylor Series Methods}{57}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Runge--Kutta Methods}{58}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}Adaptive Runge--Kutta--Fehlberg Method}{59}{subsection.6.5.1}%
+\contentsline {section}{\numberline {6.6}Multistep Methods}{60}{section.6.6}%
+\contentsline {section}{\numberline {6.7}Higher-Order Initial-Value Problems}{61}{section.6.7}%
+\contentsline {subsection}{\numberline {6.7.1}Euler Method for a System}{61}{subsection.6.7.1}%
+\contentsline {subsection}{\numberline {6.7.2}RK4 for a System}{62}{subsection.6.7.2}%
+\contentsline {section}{\numberline {6.8}Stability and Stiffness}{63}{section.6.8}%
+\contentsline {chapter}{\numberline {7}Boundary-Value Problems for ODEs}{64}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Two-Point Boundary-Value Problems}{64}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Linear Shooting Method}{64}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Shooting for Nonlinear Problems}{66}{section.7.3}%
+\contentsline {section}{\numberline {7.4}Finite-Difference Method}{66}{section.7.4}%
+\contentsline {chapter}{\numberline {8}Numerical Solutions to Partial Differential Equations}{68}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Classification of Second-Order PDEs}{68}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Finite Differences for Two-Variable Functions}{69}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Parabolic Problems: The Heat Equation}{69}{section.8.3}%
+\contentsline {subsection}{\numberline {8.3.1}FTCS Explicit Scheme}{69}{subsection.8.3.1}%
+\contentsline {subsection}{\numberline {8.3.2}Crank--Nicolson Implicit Method}{70}{subsection.8.3.2}%
+\contentsline {section}{\numberline {8.4}Elliptic Problems: Laplace's Equation}{71}{section.8.4}%
+\contentsline {section}{\numberline {8.5}Hyperbolic Problems: The Wave Equation}{73}{section.8.5}%

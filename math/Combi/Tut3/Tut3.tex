@@ -1,0 +1,51 @@
+\documentclass{report}
+
+\def\filename{Tut3Q10}
+\def\course{UECM3393}
+\def\chapsec{Tutorial 3}
+\def\date{\today} % to be changed
+
+\def\headL{\textbf{\course :} \chapsec}
+\def\headC{}
+\def\headR{\date}
+
+\def\footL{}
+\def\footC{\thepage}
+\def\footR{Carlos Wong 2303326}
+
+\input{preamble}
+
+\begin{document} 
+\paragraph{Q10} Generate the 3-permutations of $\{1,2,3,4,5\}$.
+
+\medskip \noindent \textit{Solution.} 
+
+\noindent
+Generating the 3-combinations, we have:
+\[123,\quad124,\quad125,\quad134,\quad135,\quad145,\quad234,\quad235,\quad245,\quad345.\]
+
+\noindent
+Note that we generated 10 3-combinations, and $\displaystyle{{5 \choose 3}} = 10.$
+
+\bigskip
+\noindent
+Now, permutating through each of the 10 3-combinations, we have:
+\[
+\begin{array}{|c|c|c|c|c|c|c|c|c|c|}
+    123 & 124 & 125 & 134 & 135 & 145 & 234 & 235 & 245 & 345 \\
+    132 & 142 & 152 & 143 & 153 & 154 & 243 & 253 & 254 & 354 \\
+    312 & 412 & 512 & 413 & 513 & 514 & 423 & 523 & 524 & 534 \\
+    321 & 421 & 521 & 431 & 531 & 541 & 432 & 532 & 542 & 543 \\
+    231 & 241 & 251 & 341 & 351 & 451 & 342 & 352 & 452 & 453 \\
+    213 & 214 & 215 & 314 & 315 & 415 & 324 & 325 & 425 & 435 \\
+\end{array}
+\]
+
+\noindent
+In total, we have $10 \times 6 = 60$ 3-permutations. (note that $P(5,3) = 5 \times 4 \times 3 = 60$)
+
+
+
+\hfill $\square$
+
+\end{document}

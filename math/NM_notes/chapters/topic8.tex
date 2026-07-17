@@ -1,0 +1,397 @@
+\chapter{Numerical Solutions to Partial Differential Equations}
+
+\section{Classification of Second-Order PDEs}
+
+\begin{definition}[Linear second-order PDE]
+A linear second-order PDE in two variables has the form
+\[
+ Au_{xx}+Bu_{xy}+Cu_{yy}+Du_x+Eu_y+Fu=G,
+\]
+where the coefficients may depend on the independent variables.  It is classified by the discriminant $B^2-4AC$:
+\begin{enumerate}[label=(\alph*),leftmargin=2.7em]
+  \item parabolic if $B^2-4AC=0$;
+  \item hyperbolic if $B^2-4AC>0$;
+  \item elliptic if $B^2-4AC<0$.
+\end{enumerate}
+\end{definition}
+
+\begin{example}
+Classify the one-dimensional wave equation, the one-dimensional heat equation and the two-dimensional Laplace equation.
+\end{example}
+
+\begin{solution}[4.5cm]
+For the wave equation
+\[
+ u_{tt}=c^2u_{xx},
+\]
+write $c^2u_{xx}-u_{tt}=0$.  Then $A=c^2$, $B=0$, $C=-1$, so
+\[
+ B^2-4AC=4c^2>0.
+\]
+It is hyperbolic.
+
+For the heat equation
+\[
+ u_t=c^2u_{xx},
+\]
+the coefficient of the second derivative in time is zero, giving discriminant $0$.  It is parabolic.
+
+For Laplace's equation
+\[
+ u_{xx}+u_{yy}=0,
+\]
+$A=C=1$ and $B=0$, so
+\[
+ B^2-4AC=-4<0.
+\]
+It is elliptic.
+\end{solution}
+
+\section{Finite Differences for Two-Variable Functions}
+
+Let
+\[
+ x_i=x_0+ih,
+ \qquad
+ t_j=t_0+jk,
+ \qquad
+ u_{i,j}\approx u(x_i,t_j).
+\]
+Typical formulas are
+\[
+ u_x(x_i,t_j)
+ =\frac{u_{i+1,j}-u_{i,j}}h+\bigO(h),
+\]
+\[
+ u_t(x_i,t_j)
+ =\frac{u_{i,j+1}-u_{i,j}}k+\bigO(k),
+\]
+\[
+ u_x(x_i,t_j)
+ =\frac{u_{i+1,j}-u_{i-1,j}}{2h}+\bigO(h^2),
+\]
+\[
+ u_{xx}(x_i,t_j)
+ =\frac{u_{i+1,j}-2u_{i,j}+u_{i-1,j}}{h^2}
+ +\bigO(h^2).
+\]
+A finite-difference scheme replaces every derivative in the PDE by such algebraic expressions and then solves for the grid values.
+
+\section{Parabolic Problems: The Heat Equation}
+
+Consider
+\[
+ u_t=u_{xx},
+ \qquad0<x<a,
+ \qquad t>0,
+\]
+with an initial temperature distribution and boundary values.
+
+\subsection{FTCS Explicit Scheme}
+
+Using a forward difference in time and a central difference in space gives
+\[
+ \frac{u_{i,j+1}-u_{i,j}}k
+ =\frac{u_{i+1,j}-2u_{i,j}+u_{i-1,j}}{h^2}.
+\]
+Define
+\[
+ r=\frac{k}{h^2}.
+\]
+Then
+\[
+ \boxed{
+ u_{i,j+1}
+ =(1-2r)u_{i,j}
+ +r(u_{i+1,j}+u_{i-1,j})
+ }.
+\]
+The method is explicit because all values at level $j+1$ are computed directly from the known level $j$.
+
+\begin{example}
+For
+\[
+ u_t=u_{xx},
+ \qquad0\le x\le1,
+\]
+with
+\[
+ u(x,0)=\sin(\pi x),
+ \qquad
+ u(0,t)=u(1,t)=0,
+\]
+use FTCS with $h=0.1$ and $k=0.0005$ to estimate $u(0.1,0.001)$.
+\end{example}
+
+\begin{solution}[5.0cm]
+Here
+\[
+ r=\frac{0.0005}{0.1^2}=0.05.
+\]
+At time $t=0$,
+\[
+ u_{1,0}=\sin(0.1\pi)=0.309017,
+ \quad
+ u_{2,0}=\sin(0.2\pi)=0.587785,
+ \quad u_{0,0}=0.
+\]
+The first time step gives
+\[
+ u_{1,1}=0.9u_{1,0}+0.05(u_{2,0}+u_{0,0})
+ =0.307505.
+\]
+After computing the neighbouring values at $t=0.0005$, the second step gives
+\[
+ u_{1,2}=0.3059995.
+\]
+Therefore
+\[
+ u(0.1,0.001)\approx0.3060.
+\]
+\end{solution}
+
+\begin{theorem}[FTCS stability condition]
+For the one-dimensional heat equation, the FTCS scheme is stable only when
+\[
+ 0<r=\frac{k}{h^2}\le\frac12.
+\]
+\end{theorem}
+
+Thus refining the spatial grid forces a much smaller time step.  If $h$ is halved, the stability limit requires $k$ to be reduced by a factor of four.
+
+\subsection{Crank--Nicolson Implicit Method}
+
+Crank--Nicolson averages the spatial central differences at time levels $j$ and $j+1$:
+\[
+ \frac{u_{i,j+1}-u_{i,j}}k
+ =\frac12\left[
+ \frac{u_{i+1,j+1}-2u_{i,j+1}+u_{i-1,j+1}}{h^2}
+ +
+ \frac{u_{i+1,j}-2u_{i,j}+u_{i-1,j}}{h^2}
+ \right].
+\]
+With $r=k/h^2$, rearrangement gives
+\[
+ -ru_{i-1,j+1}+2(1+r)u_{i,j+1}-ru_{i+1,j+1}
+ =ru_{i-1,j}+2(1-r)u_{i,j}+ru_{i+1,j}.
+\]
+At every new time level, the interior values are obtained from a tridiagonal linear system.  Crank--Nicolson is second-order accurate in both space and time and has no analogous restriction $r\le1/2$ for stability.
+
+\begin{example}
+For the same heat problem, use Crank--Nicolson with $h=0.2$ and $k=0.001$ to estimate $u(0.4,0.001)$.
+\end{example}
+
+\begin{solution}[6.0cm]
+Here
+\[
+ r=\frac{0.001}{0.2^2}=0.025.
+\]
+There are four interior unknowns at the new time level.  They satisfy
+\[
+\begin{pmatrix}
+2.05&-0.025&0&0\\
+-0.025&2.05&-0.025&0\\
+0&-0.025&2.05&-0.025\\
+0&0&-0.025&2.05
+\end{pmatrix}
+\begin{pmatrix}
+u_{1,1}\\u_{2,1}\\u_{3,1}\\u_{4,1}
+\end{pmatrix}
+=
+\begin{pmatrix}
+1.169958\\1.893031\\1.893031\\1.169958
+\end{pmatrix}.
+\]
+Solving gives
+\[
+ (u_{1,1},u_{2,1},u_{3,1},u_{4,1})
+ \approx(0.582199,0.942018,0.942018,0.582199).
+\]
+Since $x=0.4$ corresponds to $i=2$,
+\[
+ u(0.4,0.001)\approx0.9420.
+\]
+\end{solution}
+
+For this problem, the exact solution is
+\[
+ u(x,t)=e^{-\pi^2t}\sin(\pi x).
+\]
+This allows explicit and implicit schemes to be compared with the true solution.  FTCS can be very accurate when its stability condition is respected, but it may become unstable when $k/h^2$ is too large.  Crank--Nicolson remains stable and usually gives better accuracy at larger time steps.
+
+\section{Elliptic Problems: Laplace's Equation}
+
+For
+\[
+ u_{xx}+u_{yy}=0,
+\]
+use central differences on a rectangular grid with spacings $h$ and $k$:
+\[
+ \frac{u_{i+1,j}-2u_{i,j}+u_{i-1,j}}{h^2}
+ +
+ \frac{u_{i,j+1}-2u_{i,j}+u_{i,j-1}}{k^2}=0.
+\]
+For a square grid $h=k$, this simplifies to the five-point formula
+\[
+ \boxed{
+ u_{i,j}=\frac14
+ \left(u_{i+1,j}+u_{i-1,j}+u_{i,j+1}+u_{i,j-1}\right)
+ }.
+\]
+Thus each interior temperature is the average of its four nearest neighbours.  All interior equations form a sparse linear system, commonly solved by Jacobi, Gauss--Seidel or SOR.
+
+\begin{example}
+A square plate of side $12$ cm has temperatures
+\[
+ \text{left}=	ext{right}=	ext{bottom}=100^\circ\mathrm C,
+ \qquad
+ \text{top}=0^\circ\mathrm C.
+\]
+Using a mesh size of $4$ cm, find the temperatures at
+\[
+ A(4,4),\quad B(8,4),\quad C(8,8),\quad D(4,8).
+\]
+Gauss--Seidel starts from
+\[
+ u_A=u_B=80,
+ \qquad u_C=u_D=50,
+\]
+and stops when every change is below $10^{-3}$.
+\end{example}
+
+\begin{solution}[7.0cm]
+The five-point equations are
+\[
+ u_A=\frac{100+u_B+u_D+100}{4},
+\]
+\[
+ u_B=\frac{u_A+100+u_C+100}{4},
+\]
+\[
+ u_C=\frac{u_D+100+0+u_B}{4},
+\]
+\[
+ u_D=\frac{100+u_C+0+u_A}{4}.
+\]
+By symmetry, $u_A=u_B$ and $u_C=u_D$.  Let these common values be $a$ and $c$.  Then
+\[
+ a=50+\frac{a+c}{4},
+ \qquad
+ c=25+\frac{a+c}{4}.
+\]
+Equivalently,
+\[
+ 3a-c=200,
+ \qquad
+ -a+3c=100.
+\]
+Solving gives
+\[
+ a=87.5,
+ \qquad c=62.5.
+\]
+Gauss--Seidel converges to the same values:
+\[
+ u_A=u_B=87.5^\circ\mathrm C,
+ \qquad
+ u_C=u_D=62.5^\circ\mathrm C.
+\]
+\end{solution}
+
+\section{Hyperbolic Problems: The Wave Equation}
+
+Consider
+\[
+ u_{tt}=u_{xx},
+\]
+with fixed-end boundary conditions and initial displacement and velocity:
+\[
+ u(0,t)=u(a,t)=0,
+\]
+\[
+ u(x,0)=f(x),
+ \qquad
+ u_t(x,0)=g(x).
+\]
+Using central differences in both time and space gives
+\[
+ \frac{u_{i,j+1}-2u_{i,j}+u_{i,j-1}}{k^2}
+ =
+ \frac{u_{i+1,j}-2u_{i,j}+u_{i-1,j}}{h^2}.
+\]
+Let
+\[
+ \rho=\left(\frac{k}{h}\right)^2.
+\]
+Then the CTCS scheme is
+\[
+ \boxed{
+ u_{i,j+1}
+ =\rho u_{i+1,j}+2(1-\rho)u_{i,j}
+ +\rho u_{i-1,j}-u_{i,j-1}
+ }.
+\]
+The stability condition is
+\[
+ 0\le\rho\le1,
+ \qquad\text{equivalently }k\le h.
+\]
+
+The initial velocity requires a special first time level.  A central approximation at $t=0$ gives
+\[
+ \frac{u_{i,1}-u_{i,-1}}{2k}=g_i.
+\]
+Eliminating the fictitious value $u_{i,-1}$ from the CTCS equation yields
+\[
+ u_{i,1}
+ =\frac\rho2(f_{i+1}+f_{i-1})
+ +(1-\rho)f_i+kg_i.
+\]
+
+\begin{example}
+A string with fixed ends satisfies
+\[
+ u_{tt}=u_{xx},
+ \qquad0\le x\le1,
+\]
+with
+\[
+ u(x,0)=0,
+ \qquad
+ u_t(x,0)=\sin(\pi x),
+\]
+and $u(0,t)=u(1,t)=0$.  Use CTCS with $h=k=0.2$ to find the displacement at $t=0.4$ for
+$x=0.2,0.4,0.6,0.8$.
+\end{example}
+
+\begin{solution}[6.2cm]
+Since $h=k$, we have $\rho=1$.  The initial displacement is $f_i=0$, so the first time level is
+\[
+ u_{i,1}=kg_i=0.2\sin(\pi x_i).
+\]
+Thus at $t=0.2$,
+\[
+ (u_{1,1},u_{2,1},u_{3,1},u_{4,1})
+ \approx(0.11756,0.19021,0.19021,0.11756).
+\]
+For the next level, because $\rho=1$ and $u_{i,0}=0$,
+\[
+ u_{i,2}=u_{i+1,1}+u_{i-1,1}.
+\]
+Using the fixed boundary values $u_{0,1}=u_{5,1}=0$, we obtain
+\[
+\begin{aligned}
+ u_{1,2}&=0.19021,\\
+ u_{2,2}&=0.11756+0.19021=0.30777,\\
+ u_{3,2}&=0.19021+0.11756=0.30777,\\
+ u_{4,2}&=0.19021.
+\end{aligned}
+\]
+Therefore at $t=0.4$ the displacements are approximately
+\[
+ 0.1902,
+ \quad0.3078,
+ \quad0.3078,
+ \quad0.1902.
+\]
+\end{solution}

@@ -1,0 +1,52 @@
+\documentclass{report}
+
+\def\filename{Test}
+\def\course{UECM2353 Linear Algebra}
+\def\chapsec{Tutorial 1}
+\def\date{\today} % to be changed
+
+\def\headL{\textbf{\course :} \chapsec}
+\def\headC{}
+\def\headR{\date}
+
+\def\footL{}
+\def\footC{\thepage}
+\def\footR{Carlos Wong 2303326}
+
+\input{preamble}
+
+\newcommand{\vecInit}{Let $\vec{u}, \vec{v}, \vec{w} \in \mathcal{M}_2,$ and let $a, b$ be scalars.}
+
+\begin{document}
+
+\paragraph{Q1} Show that $\mathcal{M}_2$ is a vector space under the standard operations. \\
+
+\noindent
+Let $A = [a_{ij}], B = [b_{ij}], C = [c_{ij}] \in \mathcal{M}_2$, for $i, j = 1, 2$ and let $u, v$ be scalars. \\
+
+\[ A + B = [a_{ij}] + [b_{ij}] = [a_{ij} + b_{ij}] \in \mathcal{M}_2\] %C1
+\[ uA = u[a_{ij}] = [ua_{ij}] \in \mathcal{M}_2\] %C2
+\[ A + B = [a_{ij}] + [b_{ij}] = [a_{ij} + b_{ij}] = [b_{ij} + a_{ij}] = [b_{ij}] + [a_{ij}] = B + A\] %A3
+\begin{align*} 
+(A + B) + C &= ([a_{ij}] + [b_{ij}]) + [c_{ij}] = [a_{ij} + b_{ij}] + [c_{ij}] \\ 
+&= [a_{ij} + b_{ij} + c_{ij}] = [a_{ij}] + [b_{ij} + c_{ij}] = A + (B + C)
+\end{align*} %A4
+Let $O = [o_{ij}]$ be the zero vector of $\mathcal{M}_2$ s.t. $A + O = A = O + A$ for any matrix $A$.
+Then
+\begin{align*} 
+A + O = A &\implies [a_{ij} + o_{ij}] = [a_{ij}] \implies a_{ij} + o_{ij} = a_{ij} \text{ for } i, j = 1, 2 \\
+&\implies o_{ij} = 0 \text{ for } i, j = 1, 2 \\
+\therefore O = \begin{bmatrix} 0 &0 \\ 0 &0 \end{bmatrix} &\text{ is the zero vector of } \mathcal{M}_2.
+\end{align*} %A5
+Let $A^* = [a^*_{ij}]$ denote the negative of $A$ s.t. $A + A^* = O = A^* + A$.
+Then
+\begin{align*}
+A + A^* = O &\implies [a_{ij}] + [a^*_{ij}] = O \implies [a_{ij} + a^*_{ij}] = O \\ 
+&\implies a_{ij} + a^*_{ij} = 0 \text{ for } i, j = 1, 2. \\
+&\implies a^*_{ij} = -a_{ij} \text{ for } i, j = 1, 2. \\
+\therefore A^* = [-a_{ij}] &= -[a_{ij}] = -A \text{ is the negative of } A.
+\end{align*} %A6
+\[ u(A+B) = u [a_{ij} + b_{ij}] = [u(a_{ij} + b_{ij})] = [ua_{ij} + ub_{ij}] = [ua_{ij}] + [ub_{ij}] = u[a_{ij}] + u[b_{ij}] = uA + uB\] %M7
+\[(u+v)A = (u+v)[a_{ij}] = [(u+v)a_{ij}] = [ua_{ij} + va_{ij}] = [ua_{ij}] + [va_{ij}] = u[a_{ij}] + v[a_{ij}] = uA + vA\] %M8
+
+\end{document}

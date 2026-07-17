@@ -1,0 +1,931 @@
+\chapter{Numerical Linear Algebra}
+
+Note: If you are already familiar with the concepts taught in Linear Algebra (or perhaps Basic Mathematics if you are an FM student), you can directly skip to the summary before Section 2.2.
+
+\noindent
+However, throughout this section, I assume you have at least seen some of the basic notations discussed in the Linear Algebra (or Basic Mathematics).
+
+\section{Linear Systems and Direct Methods}
+
+A system of $m$ linear equations in $n$ unknowns can be written as
+\[
+  A\vect{x}=\vect{b},
+\]
+where $A=[a_{ij}]\in\R^{m\times n}$ is the coefficient matrix,
+$\vect{x}=[x_1,\ldots,x_n]^T$ is the vector of unknowns, and
+$\vect{b}=[b_1,\ldots,b_m]^T$ is the right-hand side.  In this course we are mainly interested in square systems, $m=n$.
+
+We have previously learned a few direct methods to simplify linear systems so that an exact solution can easily be found. Gaussian elimination and matrix factorisation are such methods.
+
+\subsection{Gaussian Elimination}
+
+Gaussian elimination transforms the augmented matrix $[A\mid \vect b]$ to row-echelon form (i.e. into an upper-triangular system), or in matrix notation $[U\mid \vect b^*]$. For a pivot in row $k$, the entries below the pivot are removed using elementary row operations as follows:
+\[
+ R_j-m_{jk}R_k \rightarrow R_j,
+ \qquad
+ m_{jk}=\frac{a_{jk}^{(k)}}{a_{kk}^{(k)}},
+ \qquad j=k+1,\ldots,n.
+\]
+For reference, $a_{ij}^{(k)}$ refers to the element in the $i$-th row and $j$-th column while eliminating entries below the pivot in the $k$-th row.
+Once an upper-triangular system $U\vect{x}=\vect{b^*}$ is obtained, backward substitution gives
+\[
+ x_i=\frac{1}{u_{ii}}
+ \left(c_i-\sum_{j=i+1}^{n}u_{ij}x_j\right),
+ \qquad i=n,n-1,\ldots,1.
+\]
+
+\begin{algorithm}[Gaussian elimination]
+\begin{enumerate}
+  \item Form the augmented matrix $[A\mid \vect b]$.
+  \item For $k=1,\ldots,n-1$, use row operations to eliminate every entry below the pivot $a_{kk}^{(k)}$.
+  \item Solve the resulting upper-triangular system by backward substitution.
+\end{enumerate}
+\end{algorithm}
+
+\begin{example}
+Solve the following system of equations with Gaussian elimination:
+\[
+\begin{array}{ccccccccc}
+x_1&+&x_2&+& & &3x_4&=&4,\\
+2x_1&+&x_2&-&x_3&+&x_4&=&1,\\
+3x_1&-&x_2&-&x_3&+&2x_4&=&-3,\\
+-x_1&+&2x_2&+&3x_3&-&x_4&=&4.
+\end{array}
+\]
+\end{example}
+
+\begin{solution}[8.0cm]
+Form the augmented matrix:
+\[
+\left[
+\begin{array}{rrrr|r}
+1&1&0&3&4\\
+2&1&-1&1&1\\
+3&-1&-1&2&-3\\
+-1&2&3&-1&4
+\end{array}
+\right].
+\]
+Then,
+\[
+\left[
+\begin{array}{rrrr|r}
+1&1&0&3&4\\
+2&1&-1&1&1\\
+3&-1&-1&2&-3\\
+-1&2&3&-1&4
+\end{array}
+\right]
+\xrightarrow[
+  {\displaystyle
+    \begin{array}{l}
+      R_4+R_1\to R_4
+    \end{array}}
+]{
+  \begin{array}{l}
+    R_2-2R_1\to R_2\\
+    R_3-3R_1\to R_3
+  \end{array}
+}
+\left[
+\begin{array}{rrrr|r}
+1&1&0&3&4\\
+0&-1&-1&-5&-7\\
+0&-4&-1&-7&-15\\
+0&3&3&2&8
+\end{array}
+\right]
+\]
+\[
+    \xrightarrow[
+  {\displaystyle
+    \begin{array}{l}
+      R_4+3R_2\to R_4
+    \end{array}}
+]{{\displaystyle
+    \begin{array}{l}
+      R_3-4R_2\to R_3
+    \end{array}}
+}
+\left[
+\begin{array}{rrrr|r}
+1&1&0&3&4\\
+0&-1&-1&-5&-7\\
+0&0&3&13&13\\
+0&0&0&-13&-13
+\end{array}
+\right].
+\]
+Backward substitution yields
+\[
+   x_4=\frac{-13}{-13}=1,
+ \quad x_3=\frac{13-13(1)}{3}=0,
+\]\[
+ \quad x_2=\frac{-7+5(1)+1(0)}{-1}=2,
+ \quad x_1=\frac{4-3(1)-0(0)-2}{1}=-1.
+\]
+Thus
+\[
+ \vect{x}=[-1,2,0,1]^T.
+\]
+\end{solution}
+
+In most cases, Gaussian elimination is the preferred way to solve a linear system $A\vect{x}=\vect{b}$. But there are two problems with Gaussian Elimination, which we will discuss in the following subsections.
+
+%For a dense $n\times n$ matrix, the elimination stage requires about
+%$\tfrac23 n^3$ arithmetic operations, whereas backward substitution requires only about $n^2$.  This difference becomes important when the same coefficient matrix is used with many right-hand sides.
+
+\subsection{Pivoting Strategies}
+
+We have previously abstracted the steps for Gaussian Elimination. However, if we were to follow the steps blindly, we may run into a few problems (division by zero or numerical instabilities).
+
+A zero pivot prevents the next elimination step (since it would cause division by zero if we were to eliminate blindly).  Even a nonzero but very small pivot can magnify round-off error because the multipliers $m_{jk}$ become large.
+
+\begin{example}[Zero pivot]
+Solve
+\[
+\begin{cases}
+ 0x_1+x_2=1 \\
+ x_1+x_2=2
+\end{cases}
+\]
+\end{example}
+
+\begin{solution}[2.4cm]
+After interchanging the two equations, the system becomes
+\[
+ x_1+x_2=2,
+ \qquad x_2=1,
+\]
+and thus $x_2=1$ and $x_1=1$.
+\end{solution}
+
+\begin{example}[Small pivot]
+Consider
+\[
+\begin{cases}
+ \epsilon x_1+x_2=1\\
+ x_1+x_2=2
+\end{cases}
+\]
+where $\epsilon$ is very small.  We will see why elimination without pivoting may be unreliable.
+\end{example}
+
+\begin{solution}[3.0cm]
+Using the first equation as pivot gives the multiplier $1/\epsilon$, which is very large.  The second equation becomes
+\[
+ \left(1-\frac1\epsilon\right)x_2
+ =2-\frac1\epsilon
+ \implies
+ x_2 = \frac{2-\epsilon^{-1}}{1-\epsilon^{-1}}\approx 1.
+\]
+Substituting back into the first equation, we will get:
+\[
+    x_1 = \epsilon^{-1}(1-x_2) \approx \epsilon^{-1}(1-1) = 0.
+\]
+It is clear that this solution became unreliable when we executed Gaussian Elimination numerically. 
+
+\noindent
+(Substituting our solution $x_1 = 0, x_2 = 1$ into Equation 2 yields a contradiction.)
+\end{solution}
+
+\begin{definition}[Partial pivoting]
+At a given step $k$, partial pivoting exchanges row $k$ (the original pivot row) with a row below it with the largest leading element. Mathematically, we want a row $p\ge k$ for which
+\[
+ |a_{pk}^{(k)}|=
+ \max_{k\le i\le n}|a_{ik}^{(k)}|.
+\]
+Partial pivoting is applied in every step of elimination so that we can get a safe and accurate solution.
+\end{definition}
+
+\newpage
+\begin{example}
+Apply Gaussian elimination with partial pivoting to solve
+\[
+\begin{cases}
+\epsilon x_1 + x_2 = 1\\
+x_1 + x_2 = 2
+\end{cases}
+\]
+when \(\epsilon\) is small.
+\end{example}
+
+\begin{solution}[3.5cm]
+Since $|1| > |\epsilon|$, exchange the two equations:
+\[
+\begin{cases}
+ x_1+x_2=2\\
+ \epsilon x_1+x_2=1
+\end{cases}
+\]
+Then applying row operation $R_2 - \epsilon R_1 \to R_2$ gives
+\[
+ (1-\varepsilon)x_2=1-2\varepsilon,
+\]
+and hence
+\[
+ x_2=\frac{1-2\varepsilon}{1-\varepsilon}\approx1,
+ \qquad
+ x_1=2-x_2\approx1.
+\]
+\end{solution}
+
+\subsection{Matrix Inversion}
+If $A$ is nonsingular, its inverse can be computed by applying Gauss-Jordan elimination (i.e. reducing a matrix to r.r.e.f., reduced row-echelon form) to the block matrix $[A\mid I]$ until the left block becomes $I$:
+\[
+ [A\mid I]\longrightarrow[I\mid A^{-1}].
+\]
+However, when considering a square matrix of order $n$, finding the inverse using this method would mean applying Gauss-Jordan Elimination to an $n \times 2n$ augmented matrix.
+
+\medskip
+The issue with speed could be resolved for certain classes of problems. The table below shows the operation counts for Gaussian Elimination:
+\[
+\begin{array}[l|cc]
+    & \text{Multiplication/Divisions} & \text{Additions/Subtractions}\\
+    \text{Elimination Steps}& \frac{2n^3+3^2-5n}{6} &\frac{n^3-n}{3} \\
+\end{array}
+\]
+
+\begin{example}
+Use Gaussian Elimination followed by backwards substitution to find the inverse of
+\[
+ A=\begin{bmatrix}
+ 1&2&-1\\
+ 2&1&0\\
+ -1&1&2
+ \end{bmatrix}.
+\]
+\end{example}
+
+\begin{solution}[5.0cm]
+Reducing $[A\mid I]$ gives
+\[
+ A^{-1}=\begin{pmatrix}
+ -\frac29&\frac59&-\frac19\\[2mm]
+ \frac49&-\frac19&\frac29\\[2mm]
+ -\frac13&\frac13&\frac13
+ \end{pmatrix}.
+\]
+A direct check confirms that $AA^{-1}=I$.
+\end{solution}
+
+\subsection{$LU$ Factorisation}
+
+Suppose
+\[
+ A=LU,
+\]
+where $L$ is lower triangular and $U$ is upper triangular.  Then
+\[
+ A\vect{x}=\vect b
+ \quad\Longleftrightarrow\quad
+ L(U\vect{x})=\vect b.
+\]
+Let $U\vect{x}=\vect y$.  The system is solved in two inexpensive triangular stages:
+\[
+ L\vect y=\vect b
+ \quad\text{(forward substitution)},
+ \qquad
+ U\vect x=\vect y
+ \quad\text{(backward substitution)}.
+\]
+The factorisation costs roughly as much as one Gaussian elimination, but it can be reused for every new right-hand side.
+
+\begin{example}
+Factorise
+\[
+ A=\begin{pmatrix}
+ 1&1&0&3\\
+ 2&1&-1&1\\
+ 3&-1&-1&2\\
+ -1&2&3&-1
+ \end{pmatrix}
+\]
+into $LU$ form and solve $A\vect{x}=\vect b$ for
+$\vect b=(1,1,-3,4)\T$.
+\end{example}
+
+\begin{solution}[8.0cm]
+The elimination multipliers give
+\[
+ L=\begin{pmatrix}
+ 1&0&0&0\\
+ 2&1&0&0\\
+ 3&4&1&0\\
+ -1&-3&0&1
+ \end{pmatrix},
+ \qquad
+ U=\begin{pmatrix}
+ 1&1&0&3\\
+ 0&-1&-1&-5\\
+ 0&0&3&13\\
+ 0&0&0&-13
+ \end{pmatrix}.
+\]
+First solve $L\vect y=\vect b$:
+\[
+ y_1=1,
+ \quad y_2=-1,
+ \quad y_3=-2,
+ \quad y_4=2.
+\]
+Then solve $U\vect x=\vect y$:
+\[
+ x_4=-\frac2{13},
+ \quad x_3=0,
+ \quad x_2=\frac{23}{13},
+ \quad x_1=-\frac4{13}.
+\]
+Therefore
+\[
+ \vect x=\left(-\frac4{13},\frac{23}{13},0,-\frac2{13}\right)\T.
+\]
+\end{solution}
+
+\section{Iterative Methods for Linear Systems}
+
+Iterative methods begin with an initial vector $\vect{x}^{(0)}$ and generate
+\[
+ \vect{x}^{(0)},\vect{x}^{(1)},\vect{x}^{(2)},\ldots
+\]
+that may converge to the exact solution.  They are especially attractive for large sparse systems.
+
+Write
+\[
+ A=D+L+U,
+\]
+where $D$ contains the diagonal entries of $A$, $L$ the entries below the diagonal, and $U$ the entries above the diagonal.
+
+\subsection{Jacobi Method}
+
+The Jacobi iteration is
+\[
+ \vect{x}^{(k+1)}
+ =D^{-1}\bigl(\vect b-(L+U)\vect{x}^{(k)}\bigr).
+\]
+Componentwise,
+\[
+ x_i^{(k+1)}
+ =\frac{1}{a_{ii}}
+ \left(b_i-\sum_{j\ne i}a_{ij}x_j^{(k)}\right).
+\]
+Every new component uses only values from the previous iteration, so all corrections may be computed simultaneously.
+
+\subsection{Gauss--Seidel Method}
+
+The Gauss--Seidel iteration is
+\[
+ (D+L)\vect{x}^{(k+1)}
+ =\vect b-U\vect{x}^{(k)}.
+\]
+Componentwise,
+\[
+ x_i^{(k+1)}=\frac{1}{a_{ii}}
+ \left(
+ b_i-\sum_{j<i}a_{ij}x_j^{(k+1)}
+     -\sum_{j>i}a_{ij}x_j^{(k)}
+ \right).
+\]
+Newly computed values are used immediately, so Gauss--Seidel often converges faster than Jacobi.
+
+\subsection{Successive Over-Relaxation}
+
+The SOR update is a weighted Gauss--Seidel correction:
+\[
+ x_i^{(k+1)}
+ =(1-\omega)x_i^{(k)}
+ +\frac{\omega}{a_{ii}}
+ \left(
+ b_i-\sum_{j<i}a_{ij}x_j^{(k+1)}
+     -\sum_{j>i}a_{ij}x_j^{(k)}
+ \right),
+\]
+where $0<\omega<2$.
+When $\omega=1$, SOR reduces to Gauss--Seidel.  Values $0<\omega<1$ under-relax the iteration, while $1<\omega<2$ over-relax it.
+
+\begin{definition}[Strict diagonal dominance]
+A square matrix $A=[a_{ij}]$ is strictly diagonally dominant by rows if
+\[
+ |a_{ii}|>\sum_{j\ne i}|a_{ij}|,
+ \qquad i=1,\ldots,n.
+\]
+\end{definition}
+
+\begin{example}
+Show that
+\[
+ A=\begin{pmatrix}
+ 2&-7&4\\
+ 8&1&6\\
+ -3&5&9
+ \end{pmatrix}
+\]
+is not strictly diagonally dominant.
+\end{example}
+
+\begin{solution}[2.5cm]
+The first row already fails the test because
+\[
+ |2|=2<|-7|+|4|=11.
+\]
+The second row also fails because $|1|<|8|+|6|$.  Hence $A$ is not strictly diagonally dominant.
+\end{solution}
+
+\begin{theorem}[Convergence under diagonal dominance]
+If $A$ is strictly diagonally dominant, then the Jacobi and Gauss--Seidel iterations converge to the unique solution of $A\vect{x}=\vect b$ for every initial vector $\vect{x}^{(0)}$.
+\end{theorem}
+
+A common stopping test is
+\[
+ \max_i|x_i^{(k+1)}-x_i^{(k)}|<\varepsilon.
+\]
+A residual test such as $\norm{\vect b-A\vect{x}^{(k)}}_\infty<\varepsilon$ is often more informative because it measures how well the computed vector satisfies the original equations.
+
+\begin{example}
+Use the Jacobi method, starting from $\vect{x}^{(0)}=\vect0$, to solve
+\[
+\begin{aligned}
+20x_1+x_2-x_3&=17,\\
+x_1-10x_2+x_3&=13,\\
+-x_1+x_2+10x_3&=18.
+\end{aligned}
+\]
+Stop when every component changes by less than $0.0002$.
+\end{example}
+
+\begin{solution}[8.0cm]
+The iteration equations are
+\[
+ x_1^{(k+1)}=\frac{17-x_2^{(k)}+x_3^{(k)}}{20},
+\]
+\[
+ x_2^{(k+1)}=\frac{x_1^{(k)}+x_3^{(k)}-13}{10},
+ \qquad
+ x_3^{(k+1)}=\frac{18+x_1^{(k)}-x_2^{(k)}}{10}.
+\]
+The iterates are
+\[
+\begin{array}{c|rrr}
+\toprule
+k&x_1^{(k)}&x_2^{(k)}&x_3^{(k)}\\
+\midrule
+0&0&0&0\\
+1&0.85000&-1.30000&1.80000\\
+2&1.00500&-1.03500&2.01500\\
+3&1.00250&-0.99800&2.00400\\
+4&1.00010&-0.99935&2.00005\\
+5&0.99997&-0.99998&1.99994\\
+6&1.00000&-1.00001&2.00000\\
+\bottomrule
+\end{array}
+\]
+At iteration $6$ all changes are below $0.0002$.  Thus
+\[
+ \vect{x}\approx(1,-1,2)\T.
+\]
+\end{solution}
+
+\begin{example}
+Solve the same system by the Gauss--Seidel method with the same initial vector and stopping criterion.
+\end{example}
+
+\begin{solution}[6.5cm]
+Using the newest available values gives
+\[
+\begin{array}{c|rrr}
+\toprule
+k&x_1^{(k)}&x_2^{(k)}&x_3^{(k)}\\
+\midrule
+0&0&0&0\\
+1&0.85000&-1.21500&2.00650\\
+2&1.01108&-0.99824&2.00093\\
+3&0.99996&-0.99991&1.99999\\
+4&0.99999&-1.00000&2.00000\\
+\bottomrule
+\end{array}
+\]
+The tolerance is met after four iterations, so
+$\vect{x}\approx(1,-1,2)\T$.
+\end{solution}
+
+\begin{example}
+Use two SOR iterations with $\omega=1.25$ and $\vect{x}^{(0)}=\vect0$ for
+\[
+\begin{aligned}
+3x_1-x_2+x_3&=-1,\\
+-x_1+3x_2-x_3&=7,\\
+x_1-x_2+3x_3&=-7.
+\end{aligned}
+\]
+\end{example}
+
+\begin{solution}[5.5cm]
+The first SOR sweep gives
+\[
+ \vect{x}^{(1)}
+ =(-0.41667,\ 2.74306,\ -1.60012)\T.
+\]
+Using these values in the second sweep gives
+\[
+ \vect{x}^{(2)}
+ =(1.49715,\ 2.18800,\ -2.22878)\T.
+\]
+Thus after two iterations,
+\[
+ x_1\approx1.4971,
+ \qquad x_2\approx2.1880,
+ \qquad x_3\approx-2.2288.
+\]
+\end{solution}
+
+\subsection{Conjugate Gradient Method}
+
+For a symmetric positive-definite matrix $A$, solving $A\vect{x}=\vect b$ is equivalent to minimising
+\[
+ \phi(\vect{x})=\frac12\vect{x}\T A\vect{x}-\vect{x}\T\vect b.
+\]
+The conjugate gradient method constructs mutually $A$-conjugate search directions and, in exact arithmetic, reaches the exact solution in at most $n$ steps.
+
+\begin{algorithm}[Conjugate gradient]
+Choose $\vect{x}_0$.  Set
+\[
+ \vect r_0=\vect b-A\vect{x}_0,
+ \qquad
+ \vect p_0=\vect r_0.
+\]
+For $k=0,1,2,\ldots$, compute
+\[
+ \alpha_k=\frac{\vect r_k\T\vect r_k}{\vect p_k\T A\vect p_k},
+ \qquad
+ \vect{x}_{k+1}=\vect{x}_k+\alpha_k\vect p_k,
+\]
+\[
+ \vect r_{k+1}=\vect r_k-\alpha_kA\vect p_k,
+ \qquad
+ \beta_k=\frac{\vect r_{k+1}\T\vect r_{k+1}}{\vect r_k\T\vect r_k},
+\]
+\[
+ \vect p_{k+1}=\vect r_{k+1}+\beta_k\vect p_k.
+\]
+\end{algorithm}
+
+\begin{example}
+Apply conjugate gradient with $\vect{x}_0=\vect0$ to
+\[
+ A=\begin{pmatrix}
+4&3&0\\3&4&-1\\0&-1&4
+\end{pmatrix},
+\qquad
+\vect b=\begin{pmatrix}24\\30\\-24\end{pmatrix}.
+\]
+\end{example}
+
+\begin{solution}[7.0cm]
+The successive approximations are
+\[
+\begin{array}{c|rrr}
+\toprule
+k&x_1&x_2&x_3\\
+\midrule
+0&0&0&0\\
+1&3.52577&4.40722&-3.52577\\
+2&2.85801&4.14897&-4.95422\\
+3&3.00000&4.00000&-5.00000\\
+\bottomrule
+\end{array}
+\]
+The residual after the third step is zero to round-off accuracy, giving
+\[
+ \vect{x}=(3,4,-5)\T.
+\]
+\end{solution}
+
+\section{Eigenvalues and Eigenvectors}
+
+\begin{definition}[Eigenvalue and eigenvector]
+A scalar $\lambda$ is an eigenvalue of an $n\times n$ matrix $A$ if there exists a nonzero vector $\vect v$ such that
+\[
+ A\vect v=\lambda\vect v.
+\]
+The vector $\vect v$ is an eigenvector corresponding to $\lambda$.
+\end{definition}
+
+Eigenvalues satisfy the characteristic equation
+\[
+ \det(A-\lambda I)=0.
+\]
+Once $\lambda$ is known, its eigenvectors are the nonzero solutions of
+$(A-\lambda I)\vect v=\vect0$.
+
+\begin{example}
+For
+\[
+ A=\begin{pmatrix}4&1\\3&2\end{pmatrix},
+ \qquad
+ \vect v=\begin{pmatrix}1\\1\end{pmatrix},
+\]
+verify that $\vect v$ is an eigenvector and find its eigenvalue.
+\end{example}
+
+\begin{solution}[2.2cm]
+\[
+ A\vect v
+ =\begin{pmatrix}5\\5\end{pmatrix}
+ =5\begin{pmatrix}1\\1\end{pmatrix}.
+\]
+Hence $\vect v$ is an eigenvector corresponding to $\lambda=5$.
+\end{solution}
+
+\subsection{Gershgorin Discs}
+
+\begin{theorem}[Gershgorin's theorem]
+Every eigenvalue of $A=[a_{ij}]$ lies in at least one disc
+\[
+ \abs{z-a_{ii}}\le r_i,
+ \qquad
+ r_i=\sum_{j\ne i}|a_{ij}|.
+\]
+\end{theorem}
+
+For a real symmetric matrix, all eigenvalues are real, so the discs may be viewed as intervals on the real line.
+
+\begin{example}
+Find Gershgorin intervals for
+\[
+ A=\begin{pmatrix}
+7&4&-4\\
+4&-8&-1\\
+-4&-1&-8
+\end{pmatrix}.
+\]
+\end{example}
+
+\begin{solution}[3.8cm]
+The row radii are
+\[
+ r_1=8,
+ \qquad r_2=5,
+ \qquad r_3=5.
+\]
+Thus the intervals are
+\[
+ [-1,15],
+ \qquad[-13,-3],
+ \qquad[-13,-3].
+\]
+The first interval is disjoint from the other two, so one eigenvalue lies in $[-1,15]$ and the remaining two lie in $[-13,-3]$.
+\end{solution}
+
+\subsection{Power Method}
+
+\begin{definition}[Dominant eigenvalue]
+An eigenvalue $\lambda_1$ is dominant if
+\[
+ |\lambda_1|>|\lambda_j|
+ \qquad\text{for every }j\ne1.
+\]
+\end{definition}
+
+If $A$ is diagonalizable and the initial vector has a nonzero component in the dominant eigendirection, then
+\[
+ A^k\vect{x}_0
+\]
+becomes increasingly parallel to a dominant eigenvector.  The corresponding eigenvalue may be estimated by the Rayleigh quotient
+\[
+ \rho(\vect x)=\frac{\vect{x}\T A\vect{x}}{\vect{x}\T\vect{x}}.
+\]
+The convergence rate is governed chiefly by $|\lambda_2/\lambda_1|$.
+
+\begin{example}
+Determine whether a dominant eigenvalue exists in each case:
+\begin{enumerate}[label=(\alph*),leftmargin=2.7em]
+\item $-5,4,2,-3$;
+\item $2,-5,5$.
+\end{enumerate}
+\end{example}
+
+\begin{solution}[2.2cm]
+In (a), $-5$ is dominant because its modulus is strictly largest.  In (b), both $-5$ and $5$ have modulus $5$, so no unique dominant eigenvalue exists.
+\end{solution}
+
+\begin{example}
+Let
+\[
+ A=\begin{pmatrix}4&-2\\3&-1\end{pmatrix},
+ \qquad
+ \vect{x}_0=\begin{pmatrix}1\\0\end{pmatrix}.
+\]
+Perform six power iterations and estimate the dominant eigenpair.
+\end{example}
+
+\begin{solution}[6.8cm]
+Successive products are
+\[
+\begin{aligned}
+\vect{x}_1&=(4,3)\T,\\
+\vect{x}_2&=(10,9)\T,\\
+\vect{x}_3&=(22,21)\T,\\
+\vect{x}_4&=(46,45)\T,\\
+\vect{x}_5&=(94,93)\T,\\
+\vect{x}_6&=(190,189)\T.
+\end{aligned}
+\]
+The direction approaches $(1,1)\T$.  The Rayleigh quotient at the sixth iterate is
+\[
+ \rho(\vect{x}_6)
+ =\frac{\vect{x}_6\T A\vect{x}_6}{\vect{x}_6\T\vect{x}_6}
+ \approx2.0132.
+\]
+Thus the dominant eigenvalue is approximately $2.0132$ and a corresponding eigenvector is approximately $(190,189)\T$.  The exact dominant eigenpair is $\lambda=2$ with eigenvector $(1,1)\T$.
+\end{solution}
+
+To prevent entries from growing too large, scale after every multiplication:
+\[
+ \vect y_k=A\vect{x}_{k-1},
+ \qquad
+ \vect{x}_k=\frac{\vect y_k}{\max_i|y_{k,i}|}.
+\]
+
+\begin{example}
+Repeat the previous example using power iteration with scaling.
+\end{example}
+
+\begin{solution}[3.6cm]
+After six scaled iterations,
+\[
+ \vect{x}_6\approx(1,0.9947)\T.
+\]
+The Rayleigh quotient gives
+\[
+ \lambda_{\max}\approx2.0133.
+\]
+Scaling changes only the size of the iterates, not their direction.
+\end{solution}
+
+\subsection{Inverse and Shifted Inverse Power Methods}
+
+If $A$ is nonsingular, the eigenvalues of $A^{-1}$ are $1/\lambda_i$.  Hence power iteration applied to $A^{-1}$ finds the eigenvalue of $A$ having smallest modulus.  In practice one solves
+\[
+ A\vect y_k=\vect{x}_{k-1}
+\]
+rather than explicitly forming $A^{-1}$.
+
+\begin{example}
+Let
+\[
+ A=\begin{pmatrix}2&3\\4&1\end{pmatrix},
+ \qquad
+ \vect{x}_0=(-0.7,1)\T.
+\]
+Use two inverse power iterations with scaling to approximate the smaller eigenvalue.
+\end{example}
+
+\begin{solution}[5.2cm]
+Here
+\[
+ A^{-1}=\begin{pmatrix}-0.1&0.3\\0.4&-0.2\end{pmatrix}.
+\]
+The first scaled iterate is approximately
+\[
+ \vect{x}_1=(0.7708,-1)\T,
+ \qquad \lambda^{(1)}\approx-1.9952.
+\]
+The second is
+\[
+ \vect{x}_2=(-0.7419,1)\T,
+ \qquad \lambda^{(2)}\approx-2.0020.
+\]
+The estimated percentage change is about $0.34\%$.  Thus the smaller eigenvalue is approximately $-2.0020$.
+\end{solution}
+
+To find an eigenvalue near a prescribed shift $a$, apply inverse iteration to
+$A-aI$.  If $\beta$ is the dominant eigenvalue of $(A-aI)^{-1}$, then
+\[
+ \lambda\approx a+\frac1\beta.
+\]
+
+\begin{example}
+Use two shifted inverse power iterations with $a=6$ and
+$\vect{x}_0=(1,0)\T$ to find the eigenvalue of
+\[
+ A=\begin{pmatrix}7&-2\\3&-1\end{pmatrix}
+\]
+nearest to $6$.
+\end{example}
+
+\begin{solution}[4.2cm]
+Since
+\[
+ (A-6I)^{-1}=\begin{pmatrix}7&-2\\3&-1\end{pmatrix},
+\]
+the scaled iterates are approximately
+\[
+ \vect{x}_1=(1,0.4286)\T,
+ \qquad
+ \vect{x}_2=(1,0.4186)\T.
+\]
+At the second step the Rayleigh estimate for $(A-6I)^{-1}$ is
+$\beta\approx6.16337$.  Hence
+\[
+ \lambda\approx6+\frac1{6.16337}=6.1622.
+\]
+\end{solution}
+
+\section{Householder Reduction and the QR Algorithm}
+
+\begin{definition}[Householder transformation]
+Let $\vect w\in\R^n$ satisfy $\vect w\T\vect w=1$.  The matrix
+\[
+ P=I-2\vect w\vect w\T
+\]
+is a Householder transformation.
+\end{definition}
+
+A Householder matrix is symmetric and orthogonal:
+\[
+ P\T=P,
+ \qquad
+ P^{-1}=P.
+\]
+It reflects vectors across the hyperplane orthogonal to $\vect w$.  Carefully chosen Householder transformations can introduce zeros below the first subdiagonal of a symmetric matrix while preserving symmetry and eigenvalues.  Repeating the process reduces a symmetric matrix to tridiagonal form.
+
+\begin{example}
+Reduce
+\[
+ A=\begin{pmatrix}
+4&1&-2&2\\
+1&2&0&1\\
+-2&0&3&-2\\
+2&1&-2&-1
+\end{pmatrix}
+\]
+to tridiagonal form using Householder transformations.
+\end{example}
+
+\begin{solution}[4.5cm]
+A sequence of orthogonal similarity transformations produces
+\[
+ T=\begin{pmatrix}
+4&-3&0&0\\[1mm]
+-3&\frac{10}{3}&-\frac53&0\\[1mm]
+0&-\frac53&-\frac{33}{25}&\frac{68}{75}\\[1mm]
+0&0&\frac{68}{75}&\frac{149}{75}
+\end{pmatrix}.
+\]
+Because every step has the form $PAP\T$, the tridiagonal matrix $T$ is similar to $A$ and has the same eigenvalues.
+\end{solution}
+
+For a symmetric tridiagonal matrix, the QR algorithm repeatedly performs
+\[
+ A^{(k)}=Q^{(k)}R^{(k)},
+ \qquad
+ A^{(k+1)}=R^{(k)}Q^{(k)}.
+\]
+Since
+\[
+ A^{(k+1)}=(Q^{(k)})\T A^{(k)}Q^{(k)},
+\]
+all iterates are similar and have the same eigenvalues.  Under suitable conditions the off-diagonal entries tend to zero, and the diagonal entries approach the eigenvalues.
+
+\begin{example}
+Perform one QR iteration for
+\[
+ A=\begin{pmatrix}
+3&1&0\\
+1&3&1\\
+0&1&3
+\end{pmatrix}.
+\]
+\end{example}
+
+\begin{solution}[6.0cm]
+One QR factorisation is $A=QR$, with
+\[
+ Q\approx\begin{pmatrix}
+0.94868&-0.29409&0.11625\\
+0.31623&0.88226&-0.34874\\
+0&0.36761&0.92998
+\end{pmatrix},
+\]
+\[
+ R\approx\begin{pmatrix}
+3.16228&1.89737&0.31623\\
+0&2.72029&1.98560\\
+0&0&2.43270
+\end{pmatrix}.
+\]
+Therefore
+\[
+ A^{(2)}=RQ\approx
+\begin{pmatrix}
+3.60000&0.86023&0\\
+0.86023&3.12973&0.89753\\
+0&0.89753&2.27027
+\end{pmatrix}.
+\]
+This matrix is symmetric and similar to $A$, but its off-diagonal entries have begun to change toward a more diagonal form.
+\end{solution}
+
+\phantomsection
+\section*{Tutorial 2}
+\addcontentsline{toc}{section}{Tutorial 2}

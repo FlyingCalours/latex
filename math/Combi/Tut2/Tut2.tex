@@ -1,0 +1,51 @@
+\documentclass{report}
+
+\def\filename{Tut2Q2,14}
+\def\course{UECM3393}
+\def\chapsec{Tutorial 2}
+\def\date{\today} % to be changed
+
+\def\headL{\textbf{\course :} \chapsec}
+\def\headC{}
+\def\headR{\date}
+
+\def\footL{}
+\def\footC{\thepage}
+\def\footR{Carlos Wong 2303326}
+
+\input{preamble}
+
+\begin{document} 
+\paragraph{Q2} Find the number of ways a man, woman, boy and girl can be selected from 5 men, 6 women, 2 boys, and 4 girls.
+
+\medskip \noindent \textit{Solution.} 
+
+By the multiplication principle (MP), we have $5 \times 6 \times 2 \times 4 = 240$ ways to select a man, a woman, a boy, and a girl from 5 men, 6 women, 2 boys, and 4 girls. \hfill $\square$
+
+\newpage
+
+\paragraph{Q14} Determine the number of nonnegative integer solutions to the pair of equations
+
+\[ x_1 + x_2 + x_3 = 6, \; \; \; \; x_1 + x_2 + \dots + x_5  =15 \]
+
+$\; \; \; \; $ where $x_i \geq 0$ for all $i = 1, 2, 3, 4, 5$.
+
+\medskip \noindent \textit{Solution.}
+
+We have two equations as the following:
+\begin{align}{x_1 + x_2 + x_3 &= 6\\x_1 + x_2 + x_3 + x_4 + x_5 &= 15}\end{align}
+Subtracting Equation 1 from Equation 2, we have:
+\begin{align}{x_1 + x_2 + x_3 = 6\\x_4 + x_5 = 9 }\end{align}
+Thus, we have separated the problem into two smaller independent problems; the first from Equation 3, and the second from Equation 4, given the constraint $x_i \geq 0$ for all $i = 1, 2, 3, 4, 5$.
+
+\medskip \noindent
+There are $\displaystyle {6+3-1 \choose 6} = {8 \choose 6} = 28$ ordered triples $(x_1, x_2, x_3)$ that satisfy Equation 3 and $x_i \geq 0 \text{ for } i = 1, 2, 3$.
+
+\medskip \noindent
+There are also $\displaystyle {9+2-1 \choose 9} = {10 \choose 9} = 10$ ordered pairs $(x_4, x_5)$ that satisfy Equation 4 and $x_i \geq 0 \text{ for }i = 4, 5$.
+
+\medskip \noindent
+Therefore, by MP, there are $28 \times 10 = 280$ ordered 5-tuples $(x_1, x_2, x_3, x_4, x_5)$ that satisfy the given pair of equations and all $x_i \geq 0$ for all $i = 1, 2, 3, 4, 5$. 
+\hfill $\square$
+
+\end{document}

@@ -1,0 +1,45 @@
+\documentclass{report}
+
+\def\filename{Tut1Q3}
+\def\course{UECM3393}
+\def\chapsec{Tutorial 1}
+\def\date{\today} % to be changed
+
+\def\headL{\textbf{\course :} \chapsec}
+\def\headC{}
+\def\headR{\date}
+
+\def\footL{}
+\def\footC{\thepage}
+\def\footR{Carlos Wong 2303326}
+
+\input{preamble}
+
+\begin{document} 
+\paragraph{Q3. $\\$}
+
+(a) Show that if any 14 integers are selected from the set $S = \{1,2,3, \dots , 25\}$, there are at least two whose sum is 26.
+
+\medskip \noindent \textit{Solution.} 
+
+We see that $1+25=26, 2+24=26, \dots , 12+14=26$.
+
+That is, there are 12 distinct pairs of integers $(a, b)$ that can be chosen from the set $S$ s.t. $a+b=26$.
+
+Note that if 13 is selected, it has no corresponding pair such that they sum to 26.
+
+From here, we can construct 13 pigeonholes from the 12 distinct pairs of integers and the one lone integer that has no corresponding pair.
+
+By the Pigeonhole Principle, putting 14 pigeons into 13 pigeonholes guarantees that one pigeonhole has at least two pigeons.
+
+Thus, selecting 14 integers from $S$ guarantees one pair of integers that sum to 26 being chosen. \hfill $\square$
+
+\bigskip
+
+(b) Write a statement that generalizes the results of part (a).
+
+\medskip \noindent \textit{Solution.}
+
+Selecting $\lfloor \frac{n+1}{2}\rfloor + 1$ integers from $S = \{1,2, \dots , n\}$ guarrantees that there are at least two integers selected that sum to $n+1$. \hfill $\square$
+
+\end{document}

@@ -1,0 +1,53 @@
+\documentclass{report}
+
+\def\filename{Tut4Q11}
+\def\course{UECM3393}
+\def\chapsec{Tutorial 4}
+\def\date{\today} % to be changed
+
+\def\headL{\textbf{\course :} \chapsec}
+\def\headC{}
+\def\headR{\date}
+
+\def\footL{}
+\def\footC{\thepage}
+\def\footR{Carlos Wong 2303326}
+
+\input{preamble}
+
+\begin{document} 
+\paragraph{Q11} Find the coefficient of $w^2x^2y^2z^2$ in the expansion of
+
+\medskip \noindent
+(a) $(w + x + y + z + 1)^{10}$
+
+\medskip \noindent \textit{Solution.} 
+
+\noindent
+The coefficient of $w^2x^2y^2z^2$ in the given expression after expansion is 
+\[\binom{10}{2,2,2,2,2} = \frac{10!}{2!2!2!2!2!}=113400.\]
+\hfill $\square$
+
+\noindent
+(b) $(2w-x+3y+z-2)^{12}$
+
+\noindent
+Similarly, the coefficient in the given expression after expansion is
+\begin{align*}
+\binom{12}{2,2,2,2,(12-2-2-2-2)}
+    \cdot2^2
+    \cdot(-1)^2
+    \cdot3^2
+    \cdot1^2
+    \cdot(-2)^{(12-2-2-2-2)}
+&=\frac{12!}{2!2!2!2!4!}
+\cdot2^2
+\cdot(-1)^2
+\cdot3^2
+\cdot1^718502400
+\cdot(-2)^4\\
+&=718502400.
+\end{align*}
+\hfill $\square$
+
+\end{document}

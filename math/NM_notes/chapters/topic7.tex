@@ -1,0 +1,268 @@
+\chapter{Boundary-Value Problems for ODEs}
+
+\section{Two-Point Boundary-Value Problems}
+
+In a second-order initial-value problem, both $y$ and $y'$ are specified at the same point.  In a two-point boundary-value problem (BVP), values of $y$ are specified at different endpoints.
+
+\begin{definition}[Two-point BVP]
+A two-point boundary-value problem has the form
+\[
+ y''=f(x,y,y'),
+ \qquad a\le x\le b,
+\]
+subject to
+\[
+ y(a)=\alpha,
+ \qquad
+ y(b)=\beta.
+\]
+\end{definition}
+
+\begin{definition}[Linear second-order equation]
+The equation is linear if it can be written as
+\[
+ y''=p(x)y'+q(x)y+r(x),
+\]
+or equivalently
+\[
+ y''-p(x)y'-q(x)y=r(x).
+\]
+\end{definition}
+
+The two principal numerical approaches in this topic are the shooting method and the finite-difference method.
+
+\section{Linear Shooting Method}
+
+Consider
+\[
+ y''=p(x)y'+q(x)y+r(x),
+ \qquad
+ y(a)=\alpha,
+ \qquad
+ y(b)=\beta.
+\]
+The linear shooting method replaces the BVP by two IVPs.
+
+First solve
+\[
+ y_1''=p(x)y_1'+q(x)y_1+r(x),
+ \qquad
+ y_1(a)=\alpha,
+ \qquad
+ y_1'(a)=0.
+\]
+Next solve the homogeneous IVP
+\[
+ y_2''=p(x)y_2'+q(x)y_2,
+ \qquad
+ y_2(a)=0,
+ \qquad
+ y_2'(a)=1.
+\]
+Because of linearity, every solution satisfying the left boundary condition has the form
+\[
+ y(x)=y_1(x)+cy_2(x).
+\]
+The right boundary condition gives
+\[
+ c=\frac{\beta-y_1(b)}{y_2(b)},
+\]
+provided $y_2(b)\ne0$.  Therefore
+\[
+ \boxed{
+ y(x)=y_1(x)+
+ \frac{\beta-y_1(b)}{y_2(b)}y_2(x)
+ }.
+\]
+The two IVPs may be integrated by RK4 or another IVP solver.
+
+\begin{example}
+Apply linear shooting with RK4 and $h=1/3$ to
+\[
+ y''=4(y-x),
+ \qquad0\le x\le1,
+ \qquad y(0)=0,
+ \qquad y(1)=2.
+\]
+Estimate $y(1/3)$ and $y(2/3)$.
+\end{example}
+
+\begin{solution}[9.0cm]
+The first IVP is
+\[
+ y_1''=4(y_1-x),
+ \qquad y_1(0)=0,
+ \qquad y_1'(0)=0.
+\]
+RK4 gives
+\[
+\begin{array}{c|rr}
+\toprule
+x&y_1&y_1'\\
+\midrule
+0&0&0\\
+1/3&-0.024691&-0.230453\\
+2/3&-0.214398&-1.026741\\
+1&-0.809732&-2.755580\\
+\bottomrule
+\end{array}
+\]
+The homogeneous IVP is
+\[
+ y_2''=4y_2,
+ \qquad y_2(0)=0,
+ \qquad y_2'(0)=1.
+\]
+RK4 gives
+\[
+\begin{array}{c|rr}
+\toprule
+x&y_2&y_2'\\
+\midrule
+0&0&1\\
+1/3&0.358025&1.230453\\
+2/3&0.881065&2.026741\\
+1&1.809732&3.755580\\
+\bottomrule
+\end{array}
+\]
+The shooting coefficient is
+\[
+ c=\frac{2-y_1(1)}{y_2(1)}
+ =\frac{2.809732}{1.809732}
+ \approx1.552568.
+\]
+Therefore
+\[
+ y\left(\frac13\right)
+ \approx-0.024691+1.552568(0.358025)
+ =0.5312,
+\]
+\[
+ y\left(\frac23\right)
+ \approx-0.214398+1.552568(0.881065)
+ =1.1535.
+\]
+\end{solution}
+
+\section{Shooting for Nonlinear Problems}
+
+For
+\[
+ y''=f(x,y,y'),
+ \qquad y(a)=\alpha,
+ \qquad y(b)=\beta,
+\]
+treat the unknown initial slope as a parameter:
+\[
+ y'(a)=z.
+\]
+For a chosen $z$, solve the IVP and denote the computed endpoint value by
+\[
+ y(b)=\phi(z).
+\]
+The correct slope solves the scalar nonlinear equation
+\[
+ F(z)=\phi(z)-\beta=0.
+\]
+Thus a nonlinear shooting method combines an IVP solver with a root-finding method such as bisection, secant or Newton iteration.  Each root iteration requires one or more integrations of the IVP.
+
+\begin{algorithm}[Nonlinear shooting]
+\begin{enumerate}
+  \item Choose a trial slope $z$.
+  \item Solve
+  \[
+    y''=f(x,y,y'),
+    \qquad y(a)=\alpha,
+    \qquad y'(a)=z.
+  \]
+  \item Compute the boundary residual $F(z)=y(b;z)-\beta$.
+  \item Adjust $z$ with a root-finding method and repeat until $|F(z)|$ is sufficiently small.
+\end{enumerate}
+\end{algorithm}
+
+\section{Finite-Difference Method}
+
+Consider the linear BVP
+\[
+ y''+P(x)y'+Q(x)y=f(x),
+ \qquad y(a)=\alpha,
+ \qquad y(b)=\beta.
+\]
+Let
+\[
+ x_i=a+ih,
+ \qquad h=\frac{b-a}{n},
+ \qquad y_i\approx y(x_i).
+\]
+At each interior node $i=1,\ldots,n-1$, use central differences:
+\[
+ y''(x_i)\approx
+ \frac{y_{i+1}-2y_i+y_{i-1}}{h^2},
+\]
+\[
+ y'(x_i)\approx
+ \frac{y_{i+1}-y_{i-1}}{2h}.
+\]
+Substitution gives
+\[
+ \frac{y_{i+1}-2y_i+y_{i-1}}{h^2}
+ +P_i\frac{y_{i+1}-y_{i-1}}{2h}
+ +Q_i y_i=f_i.
+\]
+After multiplying by $h^2$,
+\[
+ \left(1-\frac h2P_i\right)y_{i-1}
+ +(h^2Q_i-2)y_i
+ +\left(1+\frac h2P_i\right)y_{i+1}
+ =h^2f_i.
+\]
+The boundary values $y_0=\alpha$ and $y_n=\beta$ are moved to the right-hand side.  The unknown interior values satisfy a tridiagonal linear system.
+
+\begin{example}
+Use the finite-difference method with $h=1$ to approximate the solution of
+\[
+ y''-\left(1-\frac x5\right)y=x,
+ \qquad y(1)=2,
+ \qquad y(3)=-1.
+\]
+Find $y(2)$.
+\end{example}
+
+\begin{solution}[4.2cm]
+There is one interior point, $x_1=2$, with unknown $y_1\approx y(2)$.  Here
+\[
+ P(x)=0,
+ \qquad
+ Q(x)=-\left(1-\frac x5\right),
+ \qquad
+ f(x)=x.
+\]
+At $x=2$,
+\[
+ Q_1=-\frac35,
+ \qquad f_1=2.
+\]
+The finite-difference equation is
+\[
+ y_0+(Q_1-2)y_1+y_2=f_1,
+\]
+because $h=1$.  Substituting $y_0=2$ and $y_2=-1$ gives
+\[
+ 2-\frac{13}{5}y_1-1=2.
+\]
+Thus
+\[
+ -\frac{13}{5}y_1=1,
+ \qquad
+ y_1=-\frac5{13}\approx-0.3846.
+\]
+Therefore
+\[
+ y(2)\approx-0.3846.
+\]
+\end{solution}
+
+\begin{remark}
+Shooting preserves the differential-equation viewpoint but can be sensitive when the endpoint value changes greatly with the initial slope.  Finite differences convert the entire BVP directly into a sparse linear or nonlinear algebraic system and are often more robust for difficult boundary-value problems.
+\end{remark}

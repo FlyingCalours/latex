@@ -1,0 +1,39 @@
+\documentclass{report}
+
+\def\filename{Tut1Q3}
+\def\course{UECM2353}
+\def\chapsec{Tutorial 1}
+\def\date{\today} % to be changed
+
+\def\headL{\textbf{\course :} \chapsec}
+\def\headC{}
+\def\headR{\date}
+
+\def\footL{}
+\def\footC{\thepage}
+\def\footR{Carlos Wong 2303326}
+
+\input{preamble}
+
+\begin{document}
+\paragraph{Q3} Let $V$ be the set of ordered pairs of real numbers. If $(a_1, a_2)$ and $(b_1, b_2)$ are elements of $V$ and $c \in \mathbb{R}$, define
+\[ (a_1, a_2) + (b_1 + b_2) = (a_1 + b_1, a_2b_2) \text{ and } c(a_1, a_2) = (ca_1, a_2).\]
+Is $V$ a vector space over $\mathbb{R}$ with these operations? Justify your answer.
+
+\bigskip \noindent
+\textit{Solution.} \smallskip
+
+No. Consider scalars $c = 1, d = 2$ and $(a_1, a_2) = (1, 2)$.
+\smallskip
+
+But
+
+$(c+d)(a_1,a_2) = (1+2)(1,2) = 3(1,2) = (3,2)$
+
+$c(a_1,a_2) + d(a_1,a_2) = 1(1,2) + 2(1,2) = (1,2) + (2,2) = (3+2,2 \cdot 2) = (5, 4)$
+
+\medskip
+
+This implies that $(c+d)(a_1, a_2) \neq c(a_1, a_2) + d(a_1, a_2)$, thus $V$ is not a vector space over $\mathbb{R}$ with the above operations. \hfill $\square$
+
+\end{document}

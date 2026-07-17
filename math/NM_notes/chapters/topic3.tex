@@ -1,0 +1,494 @@
+\chapter{Solution of Equations}
+
+\section{Roots and Locating Roots}
+
+\begin{definition}[Root or zero]
+A number $r$ is a root of the equation $f(x)=0$ if
+\[
+ f(r)=0.
+\]
+The terms \emph{root}, \emph{solution} and \emph{zero of $f$} are used interchangeably.
+\end{definition}
+
+Linear and quadratic equations have explicit formulas.  For example,
+\[
+ ax+b=0\quad\Longrightarrow\quad x=-\frac ba,
+ \qquad a\ne0,
+\]
+and
+\[
+ ax^2+bx+c=0
+ \quad\Longrightarrow\quad
+ x=\frac{-b\pm\sqrt{b^2-4ac}}{2a}.
+\]
+For general nonlinear equations, exact formulas are usually unavailable and numerical iteration is required.
+
+\begin{example}
+Find all roots of $x^3-4x=0$.
+\end{example}
+
+\begin{solution}[2.2cm]
+Factor:
+\[
+ x^3-4x=x(x^2-4)=x(x-2)(x+2).
+\]
+Hence the roots are $-2$, $0$ and $2$.
+\end{solution}
+
+\begin{theorem}[Intermediate value theorem]
+Let $f$ be continuous on $[a,b]$.  If $f(a)$ and $f(b)$ have opposite signs, then there exists at least one $r\in(a,b)$ such that $f(r)=0$.
+\end{theorem}
+
+The theorem guarantees existence but not uniqueness.  It is the theoretical basis of bracketing methods.
+
+\begin{example}
+Show that $x=\cos x$ has at least one solution in $(0,\pi/2)$.
+\end{example}
+
+\begin{solution}[2.8cm]
+Let $f(x)=x-\cos x$.  Then $f$ is continuous and
+\[
+ f(0)=-1<0,
+ \qquad
+ f\left(\frac\pi2\right)=\frac\pi2>0.
+\]
+The intermediate value theorem therefore gives at least one root in $(0,\pi/2)$.  Trigonometric arguments must be measured in radians.
+\end{solution}
+
+\section{Bracketing Methods}
+
+A bracketing method begins with two points $x_l$ and $x_u$ such that
+\[
+ f(x_l)f(x_u)<0.
+\]
+Continuity then guarantees a root inside the interval.  The interval is repeatedly reduced while preserving the sign change.
+
+\subsection{Bisection Method}
+
+\begin{algorithm}[Bisection]
+\begin{enumerate}
+  \item Choose $x_l$ and $x_u$ such that $f(x_l)f(x_u)<0$.
+  \item Compute the midpoint
+  \[
+    x_r=\frac{x_l+x_u}{2}.
+  \]
+  \item If $f(x_l)f(x_r)<0$, set $x_u=x_r$.  If $f(x_l)f(x_r)>0$, set $x_l=x_r$.  If $f(x_r)=0$, stop.
+  \item Repeat until the required tolerance is achieved.
+\end{enumerate}
+\end{algorithm}
+
+The absolute interval error after $n$ bisections is bounded by
+\[
+ |r-x_r^{(n)}|\le\frac{b-a}{2^{n+1}}.
+\]
+A commonly used estimated percentage relative error is
+\[
+ \varepsilon_a
+ =\left|\frac{x_r^{(n)}-x_r^{(n-1)}}{x_r^{(n)}}\right|100\%.
+\]
+
+\begin{example}
+Use bisection to solve
+\[
+ x^{10}-1=0
+\]
+with initial interval $[0,1.3]$.  Stop when the estimated percentage error is below $8\%$.
+\end{example}
+
+\begin{solution}[7.0cm]
+Let $f(x)=x^{10}-1$.  The bisection table is
+\[
+\begin{array}{c|ccc|c}
+\toprule
+n&x_l&x_u&x_r&\varepsilon_a(\%)\\
+\midrule
+1&0.0000&1.3000&0.6500&--\\
+2&0.6500&1.3000&0.9750&33.3333\\
+3&0.9750&1.3000&1.1375&14.2857\\
+4&0.9750&1.1375&1.05625&7.6923\\
+\bottomrule
+\end{array}
+\]
+At the fourth iteration, $\varepsilon_a<8\%$.  Hence
+\[
+ r\approx1.0563.
+\]
+The exact positive root is $1$.
+\end{solution}
+
+Bisection is guaranteed to converge for a continuous function with a genuine sign change.  Its main disadvantages are slow linear convergence and the need for a valid bracket.  It may miss roots of even multiplicity because the function does not change sign across such roots.
+
+\section{Open Methods}
+
+Open methods do not maintain a bracketing interval.  They are generally faster when they converge, but a poor initial guess can lead to divergence or convergence to an unintended root.
+
+\subsection{Fixed-Point Iteration}
+
+To solve $f(x)=0$, rearrange the equation into
+\[
+ x=g(x)
+\]
+and iterate
+\[
+ x_{n+1}=g(x_n).
+\]
+A root of $f$ is then a fixed point of $g$.
+
+\begin{example}
+The function
+\[
+ f(x)=x^2-3x+e^x-2
+\]
+has a negative root.  Use fixed-point iteration with
+\[
+ x_{n+1}=\frac{x_n^2+e^{x_n}-2}{3},
+ \qquad x_0=-0.5,
+\]
+to approximate the smaller root.
+\end{example}
+
+\begin{solution}[6.0cm]
+The first few iterates are
+\[
+\begin{array}{c|r}
+\toprule
+n&x_n\\
+\midrule
+0&-0.5000000000\\
+1&-0.3811564468\\
+2&-0.3905495820\\
+3&-0.3902620485\\
+4&-0.3902720192\\
+5&-0.3902716747\\
+6&-0.3902716861\\
+7&-0.3902716862\\
+\bottomrule
+\end{array}
+\]
+Thus the smaller root is
+\[
+ r\approx-0.3902716862.
+\]
+\end{solution}
+
+Different rearrangements of the same equation can have very different convergence behaviour.  For example, a formula may be algebraically correct but have $|g'(r)|>1$, causing nearby errors to grow rather than shrink.
+
+\begin{example}
+Consider
+\[
+ x_{n+1}=\frac{3-x_n^3}{6}
+\]
+for solving $x^3+6x-3=0$.  Compare the behaviour for $x_0=-0.5$, $1.5$, $2.5$ and $5.5$.
+\end{example}
+
+\begin{solution}[6.0cm]
+The first three starting values eventually approach
+\[
+ r\approx0.4814056.
+\]
+For instance,
+\[
+ -0.5,\ 0.52083,\ 0.47645,\ 0.48197,\ldots
+\]
+and
+\[
+ 2.5,\ -2.10417,\ 2.05271,\ -0.94155,\ 0.63912,\ldots
+\]
+both settle toward the fixed point.  By contrast, $x_0=5.5$ produces
+\[
+ 5.5,\ -27.2292,\ 3365.24,\ -6.35\times10^9,\ldots,
+\]
+so the iteration diverges.  Local convergence does not imply convergence from every starting value.
+\end{solution}
+
+\begin{theorem}[Convergence of fixed-point iteration]
+Suppose $g$ is continuous on $[a,b]$ and maps $[a,b]$ into itself.  Then $g$ has at least one fixed point in $[a,b]$.  If, in addition, $g$ is differentiable and there is a constant $M<1$ such that
+\[
+ |g'(x)|\le M
+ \qquad\text{for all }x\in[a,b],
+\]
+then the fixed point is unique and the iteration converges to it for every $x_0\in[a,b]$.
+\end{theorem}
+
+\subsection{Newton--Raphson Method}
+
+Newton's method replaces the graph of $f$ by its tangent line at the current approximation.  The update is
+\[
+ x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}.
+\]
+For a simple root and a sufficiently close starting value, convergence is usually quadratic.
+
+\begin{algorithm}[Newton--Raphson]
+\begin{enumerate}
+  \item Choose an initial approximation $x_0$.
+  \item Compute
+  \[
+    x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}.
+  \]
+  \item Stop when $|x_{n+1}-x_n|<\varepsilon$, when $|f(x_{n+1})|$ is small, or when a maximum iteration count is reached.
+\end{enumerate}
+\end{algorithm}
+
+\begin{example}
+Use Newton's method to solve
+\[
+ x-e^{-x}=0
+\]
+for the root in $(0,2)$.  Continue until two successive approximations differ by less than $10^{-8}$.
+\end{example}
+
+\begin{solution}[5.8cm]
+Take $x_0=1$.  Since
+\[
+ f(x)=x-e^{-x},
+ \qquad
+ f'(x)=1+e^{-x},
+\]
+we use
+\[
+ x_{n+1}=x_n-\frac{x_n-e^{-x_n}}{1+e^{-x_n}}.
+\]
+The iterates are
+\[
+\begin{array}{c|c|c}
+\toprule
+n&x_n&|x_n-x_{n-1}|\\
+\midrule
+1&0.5378828427&0.4621171573\\
+2&0.5669869914&0.0291041487\\
+3&0.5671432860&0.0001562946\\
+4&0.5671432904&4.42\times10^{-9}\\
+\bottomrule
+\end{array}
+\]
+Thus
+\[
+ r\approx0.56714329.
+\]
+\end{solution}
+
+Newton's method can fail if $f'(x_n)=0$, if the derivative is very small, or if the starting point lies in an unfavourable basin of attraction.
+
+\subsection{Secant Method}
+
+The secant method replaces the derivative by a finite-difference slope:
+\[
+ x_{n+1}
+ =x_n-f(x_n)
+ \frac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})}.
+\]
+It requires two initial values but no derivative.  Its convergence order is approximately
+\[
+ \frac{1+\sqrt5}{2}\approx1.618.
+\]
+
+\begin{example}
+Use three secant iterations to approximate $\sqrt2$, with $f(x)=x^2-2$, $x_0=1.5$ and $x_1=1$.
+\end{example}
+
+\begin{solution}[3.5cm]
+The successive approximations are
+\[
+ x_2=1.400000,
+ \qquad
+ x_3=1.4166667,
+ \qquad
+ x_4=1.4142012.
+\]
+Thus after three iterations,
+\[
+ \sqrt2\approx1.4142.
+\]
+\end{solution}
+
+\section{Order of Convergence and Acceleration}
+
+\begin{definition}[Order of convergence]
+Suppose $p_n\to p$ and $p_n\ne p$.  If constants $\alpha>0$ and $\lambda>0$ exist such that
+\[
+ \lim_{n\to\infty}
+ \frac{|p_{n+1}-p|}{|p_n-p|^\alpha}
+ =\lambda,
+\]
+then the sequence converges to $p$ with order $\alpha$ and asymptotic error constant $\lambda$.
+\end{definition}
+
+Convergence is called linear when $\alpha=1$, superlinear when $1<\alpha<2$, and quadratic when $\alpha=2$.
+
+\subsection{Aitken's $\Delta^2$ Process}
+
+For a linearly convergent sequence $\{p_n\}$, Aitken's process forms
+\[
+ \widetilde p_n
+ =p_n-\frac{(p_{n+1}-p_n)^2}
+ {p_{n+2}-2p_{n+1}+p_n},
+\]
+provided the denominator is nonzero.  The transformed sequence often converges substantially faster.
+
+\subsection{Steffensen's Method}
+
+Steffensen's method applies Aitken acceleration directly to fixed-point iteration.  Starting with $p_0$, compute
+\[
+ p_1=g(p_0),
+ \qquad
+ p_2=g(p_1),
+\]
+and then
+\[
+ p=p_0-\frac{(p_1-p_0)^2}{p_2-2p_1+p_0}.
+\]
+Replace $p_0$ by $p$ and repeat.
+
+\begin{example}
+Use Steffensen's method to solve
+\[
+ x^3+4x^2-10=0,
+ \qquad
+ g(x)=\sqrt{\frac{10}{x+4}},
+\]
+starting from $p_0=1.5$.  Keep five decimal places.
+\end{example}
+
+\begin{solution}[4.6cm]
+For the first cycle,
+\[
+ p_1=g(1.5)\approx1.34840,
+ \qquad
+ p_2=g(p_1)\approx1.36738.
+\]
+Aitken acceleration gives
+\[
+ p\approx1.36526.
+\]
+Repeating the process and rounding to five decimal places gives
+\[
+ p\approx1.36523.
+\]
+\end{solution}
+
+\section{Zeros of Polynomials}
+
+\begin{theorem}[Fundamental theorem of algebra]
+Every polynomial of degree $n\ge1$ with real or complex coefficients has at least one complex root.  Counting multiplicity, it has exactly $n$ complex roots.
+\end{theorem}
+
+\subsection{Müller's Method}
+
+Müller's method fits a quadratic polynomial through three points and uses one root of that quadratic as the next approximation.  It can naturally generate complex approximations even when all starting values are real.
+
+Given $x_0,x_1,x_2$, write the local quadratic in the form
+\[
+ q(x)=a(x-x_2)^2+b(x-x_2)+c,
+ \qquad c=f(x_2).
+\]
+The coefficients $a$ and $b$ satisfy
+\[
+\begin{pmatrix}
+(x_0-x_2)^2&x_0-x_2\\
+(x_1-x_2)^2&x_1-x_2
+\end{pmatrix}
+\begin{pmatrix}a\\b\end{pmatrix}
+=
+\begin{pmatrix}f(x_0)-c\\f(x_1)-c\end{pmatrix}.
+\]
+Then
+\[
+ x_3=x_2+\frac{-2c}{b\pm\sqrt{b^2-4ac}},
+\]
+where the sign is chosen to make the denominator as large as possible in magnitude.
+
+\begin{example}
+Use one Müller iteration for
+\[
+ f(x)=x^3-2x^2-5,
+ \qquad x_0=1,
+ \quad x_1=2,
+ \quad x_2=3.
+\]
+\end{example}
+
+\begin{solution}[5.0cm]
+The function values are
+\[
+ f(1)=-6,
+ \qquad f(2)=-5,
+ \qquad f(3)=4.
+\]
+Thus $c=4$, and solving
+\[
+\begin{pmatrix}4&-2\\1&-1\end{pmatrix}
+\begin{pmatrix}a\\b\end{pmatrix}
+=
+\begin{pmatrix}-10\\-9\end{pmatrix}
+\]
+gives $a=4$ and $b=13$.  Therefore
+\[
+ x_3=3+\frac{-8}{13+\sqrt{105}}
+ \approx2.6559.
+\]
+\end{solution}
+
+\section{Systems of Nonlinear Equations}
+
+Let
+\[
+ \vect F(\vect X)=
+ \begin{pmatrix}
+ f_1(x_1,\ldots,x_n)\\
+ \vdots\\
+ f_n(x_1,\ldots,x_n)
+ \end{pmatrix}.
+\]
+Newton's method for $\vect F(\vect X)=\vect0$ uses the Jacobian matrix
+\[
+ J(\vect X)=
+ \left[\frac{\partial f_i}{\partial x_j}\right].
+\]
+At iteration $k$, solve
+\[
+ J(\vect X^{(k)})\vect H^{(k)}
+ =-\vect F(\vect X^{(k)})
+\]
+and update
+\[
+ \vect X^{(k+1)}=\vect X^{(k)}+\vect H^{(k)}.
+\]
+
+\begin{example}
+Apply one Newton iteration to
+\[
+\begin{aligned}
+ x_1^2-x_2^2+2x_2&=0,\\
+ 2x_1+x_2^2-6&=0,
+\end{aligned}
+\]
+starting from $(x_1,x_2)=(0.6,2.2)$.
+\end{example}
+
+\begin{solution}[5.5cm]
+At $\vect X^{(0)}=(0.6,2.2)\T$,
+\[
+ \vect F(\vect X^{(0)})
+ =\begin{pmatrix}-0.08\\0.04\end{pmatrix},
+ \qquad
+ J(\vect X^{(0)})
+ =\begin{pmatrix}1.2&-2.4\\2&4.4\end{pmatrix}.
+\]
+Solve
+\[
+ \begin{pmatrix}1.2&-2.4\\2&4.4\end{pmatrix}
+ \begin{pmatrix}h_1\\h_2\end{pmatrix}
+ =\begin{pmatrix}0.08\\-0.04\end{pmatrix}.
+\]
+This gives
+\[
+ h_1\approx0.0254,
+ \qquad
+ h_2\approx-0.0206.
+\]
+Therefore
+\[
+ \vect X^{(1)}
+ \approx\begin{pmatrix}0.6254\\2.1794\end{pmatrix}.
+\]
+\end{solution}
