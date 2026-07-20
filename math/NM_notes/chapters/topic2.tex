@@ -132,9 +132,6 @@ Thus
 
 In most cases, Gaussian elimination is the preferred way to solve a linear system $A\vect{x}=\vect{b}$. But there are two problems with Gaussian Elimination, which we will discuss in the following subsections.
 
-%For a dense $n\times n$ matrix, the elimination stage requires about
-%$\tfrac23 n^3$ arithmetic operations, whereas backward substitution requires only about $n^2$.  This difference becomes important when the same coefficient matrix is used with many right-hand sides.
-
 \subsection{Pivoting Strategies}
 
 We have previously abstracted the steps for Gaussian Elimination. However, if we were to follow the steps blindly, we may run into a few problems (division by zero or numerical instabilities).
@@ -240,14 +237,25 @@ However, when considering a square matrix of order $n$, finding the inverse usin
 \medskip
 The issue with speed could be resolved for certain classes of problems. The table below shows the operation counts for Gaussian Elimination:
 \[
-\begin{array}[l|cc]
+\begin{array}{l|cc}
+    \hline
     & \text{Multiplication/Divisions} & \text{Additions/Subtractions}\\
-    \text{Elimination Steps}& \frac{2n^3+3^2-5n}{6} &\frac{n^3-n}{3} \\
+    \hline
+    \text{Elimination Steps}& \rule{0pt}{4.0ex}\dfrac{2n^3+3n^2-5n}{6} &\rule{0pt}{4.0ex}\dfrac{n^3-n}{3} \\[1.5ex]
+    \hline
+    \text{Backward Substitution}& \rule{0pt}{4.0ex}\dfrac{n^2+n}{2}&\rule{0pt}{4.0ex}\dfrac{n^2-n}{2}\\[1.5ex]
+    \hline
 \end{array}
 \]
 
+From here, we see that the number of operations to do backward substitution is significantly smaller than doing the elimination steps.
+Just considering a linear system with a $1000 \times 1000$ matrix, we would need 667,165,500 operations for elimination, but only 1,000,000 operations ($0.15\%$) to perform backward substitution.
+
+Hence, for efficiency, when we compute the inverse for a matrix $A$, we will reduce $[A|I]$ to $[U|Y]$ where $U$ is an upper triangular matrix (or as we know the r.e.f. of $A$) and $Y$ is $I$ after performing elimination.
+Then, we will individually obtain the columns of $A^{-1}$ through solving $U\vect{x}_i=\vect{y}_i$ where $\vect{y}_i$ denotes the $i$-th column of $Y$.
+
 \begin{example}
-Use Gaussian Elimination followed by backwards substitution to find the inverse of
+Use Gaussian Elimination followed by backward substitution to find the inverse of
 \[
  A=\begin{bmatrix}
  1&2&-1\\
@@ -258,23 +266,115 @@ Use Gaussian Elimination followed by backwards substitution to find the inverse 
 \end{example}
 
 \begin{solution}[5.0cm]
-Reducing $[A\mid I]$ gives
 \[
- A^{-1}=\begin{pmatrix}
- -\frac29&\frac59&-\frac19\\[2mm]
- \frac49&-\frac19&\frac29\\[2mm]
- -\frac13&\frac13&\frac13
- \end{pmatrix}.
+[A|I]=
+\left[\begin{array}{ccc|ccc}
+1 & 2 & -1 & 1 & 0 & 0\\
+2 & 1 & 0 & 0 & 1 & 0\\
+-1 & 1 & 2 & 0 & 0 & 1\\
+\end{array}\right]
+\xrightarrow[
+{\displaystyle
+\begin{array}{l}
+R_3+R_1\to R_3
+\end{array}}]
+{{\displaystyle
+\begin{array}{l}
+R_2-2R_1\to R_2
+\end{array}}
+}
+\left[\begin{array}{ccc|ccc}
+1 & 2 & -1 & 1 & 0 & 0\\
+0 & -3 & 2 & -2 & 1 & 0\\
+0 & 3 & 1 & 1 & 0 & 1
+\end{array}\right]
 \]
-A direct check confirms that $AA^{-1}=I$.
+\[
+\xrightarrow{\begin{array}{l}\displaystyle{R_3+R_2\to R_3}\end{array}}
+\left[\begin{array}{ccc|ccc}
+1 & 2 & -1 & 1 & 0 & 0 \\
+0 & -3 & 2 & -2 & 1 & 0\\
+0 & 0 & 3 & -1 & 1 & 1
+\end{array}\right]=[U|Y]
+\]
+\medskip
+\[
+\begin{bmatrix}
+1 & 2 & -1\\
+0 & -3 & 2\\
+0 & 0 & 3
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\ x_2 \\ x_3
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\ -2 \\ -1
+\end{bmatrix}
+\]
+\[
+\implies
+x_3 = -\frac13, \; x_2 = \frac{-2-2(-\frac13)}{-3} = \frac49, \; x_1 = \frac{1+1(-\frac13)-2(\frac49)}{1}=-\frac29.
+\]
+
+\medskip
+
+\[
+\begin{bmatrix}
+1 & 2 & -1\\
+0 & -3 & 2\\
+0 & 0 & 3
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\ x_2 \\ x_3
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\ 1 \\ 1
+\end{bmatrix}
+\]
+\[
+\implies
+x_3 = \frac13, \; x_2 = \frac{1-2(\frac13)}{-3} = -\frac19, \; x_1 = \frac{0+1(\frac13)-2(-\frac19)}{1}=\frac59.
+\]
+
+\medskip
+
+\[
+\begin{bmatrix}
+1 & 2 & -1\\
+0 & -3 & 2\\
+0 & 0 & 3
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\ x_2 \\ x_3
+\end{bmatrix}
+=
+\begin{bmatrix}
+0 \\ 0 \\ 1
+\end{bmatrix}
+\]
+\[
+\implies
+x_3 = \frac13, \; x_2 = \frac{0-2(\frac13)}{-3} = \frac29, \; x_1 = \frac{0+1(\frac13)-2(\frac29)}{1}=-\frac19.
+\]
+
+\medskip
+\(
+ \therefore A^{-1}=\begin{bmatrix}
+ -\dfrac29&\phantom{-}\dfrac59&-\dfrac19\\[3mm]
+ \phantom{-}\dfrac49&-\dfrac19&\phantom{-}\dfrac29\\[3mm]
+ -\dfrac13&\phantom{-}\dfrac13&\phantom{-}\dfrac13
+ \end{bmatrix}.
+\)
 \end{solution}
 
-\subsection{$LU$ Factorisation}
-
+\subsection{Matrix Factorisation}
+Gaussian elimination is the principal tool in the direct solution of linear system of equations. Previously, we have learnt that the steps used for elimination can also be used to factor a matrix.
 Suppose
-\[
+\(
  A=LU,
-\]
+\)
 where $L$ is lower triangular and $U$ is upper triangular.  Then
 \[
  A\vect{x}=\vect b
