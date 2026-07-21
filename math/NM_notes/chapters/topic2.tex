@@ -251,7 +251,7 @@ The issue with speed could be resolved for certain classes of problems. The tabl
 From here, we see that the number of operations to do backward substitution is significantly smaller than doing the elimination steps.
 Just considering a linear system with a $1000 \times 1000$ matrix, we would need 667,165,500 operations for elimination, but only 1,000,000 operations ($0.15\%$) to perform backward substitution.
 
-Hence, for efficiency, when we compute the inverse for a matrix $A$, we will reduce $[A|I]$ to $[U|Y]$ where $U$ is an upper triangular matrix (or as we know the r.e.f. of $A$) and $Y$ is $I$ after performing elimination.
+Hence, for efficiency, when we compute the inverse for a matrix $A$, we will reduce $[A|I]$ to $[U|Y]$ where $U$ is an upper triangular matrix (or as we know the r.e.f. of $A$) and $Y$ is the matrix we get after performing the same elimination steps on $I$.
 Then, we will individually obtain the columns of $A^{-1}$ through solving $U\vect{x}_i=\vect{y}_i$ where $\vect{y}_i$ denotes the $i$-th column of $Y$.
 
 \begin{example}
@@ -371,56 +371,82 @@ x_3 = \frac13, \; x_2 = \frac{0-2(\frac13)}{-3} = \frac29, \; x_1 = \frac{0+1(\f
 
 \subsection{Matrix Factorisation}
 Gaussian elimination is the principal tool in the direct solution of linear system of equations. Previously, we have learnt that the steps used for elimination can also be used to factor a matrix.
-Suppose
-\(
- A=LU,
-\)
+Suppose the matrix \(A\) can be factorized as $A=LU$,
 where $L$ is lower triangular and $U$ is upper triangular.  Then
 \[
  A\vect{x}=\vect b
  \quad\Longleftrightarrow\quad
+ (LU)\vect{x}=\vect b
+ \quad\Longleftrightarrow\quad
  L(U\vect{x})=\vect b.
 \]
-Let $U\vect{x}=\vect y$.  The system is solved in two inexpensive triangular stages:
-\[
- L\vect y=\vect b
- \quad\text{(forward substitution)},
- \qquad
- U\vect x=\vect y
- \quad\text{(backward substitution)}.
-\]
-The factorisation costs roughly as much as one Gaussian elimination, but it can be reused for every new right-hand side.
+Let $U\vect{x}=\vect y$.  Now the problem $A\vect x = \vect b$ has been separated into two equations $L\vect y = \vect b \text{ and } U\vect x = \vect y$. Since both $L$ and $U$ are triangular, both equations could be solved by substitution operations (forward and backward substitution respectively).
 
+Since substitution has the operation count $\sim O(n^2)$, it is expected to speed up the process of solving $A\vect x = \vect b$. However, for only one value for $\vect b$, matrix factorization does not have much advantage over naive Gaussian Elimination. But, for different values of $\vect{b}_i$, matrix factorization would be preferred as one only needs to factorize $A$ once and the same $L$ and $U$ could be applied to the different values of $\vect{b}_i$ repeatedly.
 \begin{example}
 Factorise
 \[
- A=\begin{pmatrix}
+ A=\begin{bmatrix}
  1&1&0&3\\
  2&1&-1&1\\
  3&-1&-1&2\\
  -1&2&3&-1
- \end{pmatrix}
+ \end{bmatrix}
 \]
 into $LU$ form and solve $A\vect{x}=\vect b$ for
-$\vect b=(1,1,-3,4)\T$.
+$\vect b=[1,1,-3,4]^T$.
 \end{example}
 
 \begin{solution}[8.0cm]
-The elimination multipliers give
 \[
- L=\begin{pmatrix}
- 1&0&0&0\\
- 2&1&0&0\\
- 3&4&1&0\\
- -1&-3&0&1
- \end{pmatrix},
- \qquad
- U=\begin{pmatrix}
- 1&1&0&3\\
- 0&-1&-1&-5\\
- 0&0&3&13\\
- 0&0&0&-13
- \end{pmatrix}.
+A=\begin{bmatrix}
+1 & 1 & 0 & 3\\
+2 & 1 & -1 & 1\\
+3 & -1 & -1 & 2\\
+-1 & 2 & 3 & -1
+\end{bmatrix}
+\xrightarrow[
+{\displaystyle
+\begin{array}{l}
+R_4+R_1\to R_4
+\end{array}}]
+{{\displaystyle
+\begin{array}{l}
+R_2-2R_1\to R_2\\
+R_3-3R_1\to R_3
+\end{array}}
+}
+\begin{bmatrix}
+1 & 1 & 0 & 3\\
+0 & -1 & -1 & -5\\
+0 & -4 & -1 & -7\\
+0 & 3 & 3 & 2
+\end{bmatrix}
+\xrightarrow[
+{\displaystyle
+\begin{array}{l}
+R_4+3R_2\to R_4
+\end{array}}]
+{\displaystyle
+\begin{array}{l}
+R_3-4R_2\to R_3
+\end{array}}
+\]
+\[
+\begin{bmatrix}
+1 & 1 & 0 & 3\\
+0 & -1 & -1 & -5\\
+0 & 0 & 3 & 13\\
+0 & 0 & 0 & -13
+\end{bmatrix}
+=U,
+\qquad
+L=\begin{bmatrix}
+1 & 0 & 0 & 0\\
+2 & 1 & 0 & 0\\
+3 & 4 & 1 & 0\\
+-4 & -3 & 0 &1
+\end{bmatrix}
 \]
 First solve $L\vect y=\vect b$:
 \[
