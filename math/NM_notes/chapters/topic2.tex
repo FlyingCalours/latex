@@ -1,10 +1,5 @@
 \chapter{Numerical Linear Algebra}
 
-Note: If you are already familiar with the concepts taught in Linear Algebra (or perhaps Basic Mathematics if you are an FM student), you can directly skip to the summary before Section 2.2.
-
-\noindent
-However, throughout this section, I assume you have at least seen some of the basic notations discussed in the Linear Algebra (or Basic Mathematics).
-
 \section{Linear Systems and Direct Methods}
 
 A system of $m$ linear equations in $n$ unknowns can be written as
@@ -169,7 +164,7 @@ where $\epsilon$ is very small.  We will see why elimination without pivoting ma
 \end{example}
 
 \begin{solution}[3.0cm]
-Using the first equation as pivot gives the multiplier $1/\epsilon$, which is very large.  The second equation becomes
+Using the first equation as pivot, we will perform the row operation $\displaystyle R_2-\frac{1}{\epsilon}R_1\to R_2$. Notice that the multiplier $1/\epsilon$ is very large.  The second equation becomes
 \[
  \left(1-\frac1\epsilon\right)x_2
  =2-\frac1\epsilon
@@ -208,7 +203,7 @@ when \(\epsilon\) is small.
 \end{example}
 
 \begin{solution}[3.5cm]
-Since $|1| > |\epsilon|$, exchange the two equations:
+We see in the first column that $|1| > |\epsilon|$ which is under the pivot element. Thus exchange the two equations:
 \[
 \begin{cases}
  x_1+x_2=2\\
@@ -217,11 +212,11 @@ Since $|1| > |\epsilon|$, exchange the two equations:
 \]
 Then applying row operation $R_2 - \epsilon R_1 \to R_2$ gives
 \[
- (1-\varepsilon)x_2=1-2\varepsilon,
+ (1-\epsilon)x_2=1-2\epsilon,
 \]
 and hence
 \[
- x_2=\frac{1-2\varepsilon}{1-\varepsilon}\approx1,
+ x_2=\frac{1-2\epsilon}{1-\epsilon}\approx1,
  \qquad
  x_1=2-x_2\approx1.
 \]
@@ -445,66 +440,114 @@ L=\begin{bmatrix}
 1 & 0 & 0 & 0\\
 2 & 1 & 0 & 0\\
 3 & 4 & 1 & 0\\
--4 & -3 & 0 &1
+-1 & -3 & 0 &1
 \end{bmatrix}
 \]
-First solve $L\vect y=\vect b$:
+\(\therefore A\vect x = \vect b \implies LU\vect x = \vect b.\)
+
+\noindent
+Let $\vect y = U\vect x$. Then $LU\vect x = \vect b \implies L\vect y = \vect b$.
 \[
+\implies
+\begin{bmatrix}
+1 & 0 & 0 & 0\\
+2 & 1 & 0 & 0\\
+3 & 4 & 1 & 0\\
+-1 & -3 & 0 & 1\\
+\end{bmatrix}
+\begin{bmatrix}
+y_1 \\ y_2 \\ y_3 \\ y_4
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\ 1 \\ -3 \\ 4
+\end{bmatrix}
+\implies
  y_1=1,
- \quad y_2=-1,
- \quad y_3=-2,
- \quad y_4=2.
+ \quad y_2=1-2(1)=-1,
 \]
-Then solve $U\vect x=\vect y$:
 \[
+ \quad y_3=-3-3(1)-4(-1)=-2,
+ \quad y_4=4+1+3(-1)+0=2.
+\]
+\(
+\implies U\vect x = \vect y \implies
+\begin{bmatrix}
+1 & 1 & 0 & 3\\
+0 & -1 & -1 & -5\\
+0 & 0 & 3 & 13\\
+0 & 0 & 0 & -13\\
+\end{bmatrix}
+\begin{bmatrix}
+x_1 \\ x_2 \\ x_3 \\ x_4
+\end{bmatrix}
+=
+\begin{bmatrix}
+1 \\ -1 \\ -2 \\ 2
+\end{bmatrix}
+\)
+
+\smallskip
+\noindent
+\(\displaystyle
+\implies
  x_4=-\frac2{13},
- \quad x_3=0,
- \quad x_2=\frac{23}{13},
- \quad x_1=-\frac4{13}.
-\]
-Therefore
+ \quad x_3=-2-13\left(-\frac{2}{13}\right)=0,
+ \quad x_2=\frac1{-1}\left(-1+5\left(-\frac2{13}\right)+0\right)=\frac{23}{13},
+\)
+
+\smallskip
+\noindent
+\(\displaystyle
+\; \; \qquad x_1=1-3\left(-\frac2{13}\right)-0-\frac{23}{13}=-\frac4{13}.
+\)
+
 \[
- \vect x=\left(-\frac4{13},\frac{23}{13},0,-\frac2{13}\right)\T.
+ \therefore \vect x=\left[-\frac4{13},\frac{23}{13},0,-\frac2{13}\right]^T.
 \]
 \end{solution}
 
-\section{Iterative Methods for Linear Systems}
+\section{Iterative Methods for Solving Linear Systems}
 
-Iterative methods begin with an initial vector $\vect{x}^{(0)}$ and generate
+In this section, iterative methods start with an initial guess or approximation to a solution, $\vect{x}^{(0)}$ and then generate a succession of better and better approximations
 \[
- \vect{x}^{(0)},\vect{x}^{(1)},\vect{x}^{(2)},\ldots
+ \vect{x}^{(1)},\vect{x}^{(2)},\vect{x}^{(3)},\ldots
 \]
-that may converge to the exact solution.  They are especially attractive for large sparse systems.
+that (may) tend toward the exact solution.
+We will discuss three iterative methods:
+\begin{enumerate}
+\item Jacobi method
+\item Gauss-Seidel method
+\item Successive Over-relaxation (SOR) method
+\end{enumerate}
 
-Write
+\noindent
+To get the idea, we separate our coefficient matrix A from our linear system as the following:
 \[
  A=D+L+U,
 \]
 where $D$ contains the diagonal entries of $A$, $L$ the entries below the diagonal, and $U$ the entries above the diagonal.
 
-\subsection{Jacobi Method}
+\noindent
+Don't worry if the formulas found in the explanations below feel a bit overwhelming. For first time learners, referring to the example to get a feel how the methods work will clear up a lot of the confusion. The same goes for the majority of sections that follow in future chapters. The formulas are just there to properly define how the methods work in mathematical terms (that may be useful when trying to implement the methods in programming).
 
-The Jacobi iteration is
-\[
- \vect{x}^{(k+1)}
- =D^{-1}\bigl(\vect b-(L+U)\vect{x}^{(k)}\bigr).
-\]
+\subsection{Jacobi Method}
+Consider a linear system with $n$ equations and $n$ unknowns. Then we first solve for $x_i$ in the $i$-th equation (where $i=1,2,\dots,n$) to derive our iteration equation.
 Componentwise,
 \[
  x_i^{(k+1)}
  =\frac{1}{a_{ii}}
  \left(b_i-\sum_{j\ne i}a_{ij}x_j^{(k)}\right).
 \]
-Every new component uses only values from the previous iteration, so all corrections may be computed simultaneously.
+In matrix notation, the Jacobi iteration is
+\[
+ \vect{x}^{(k+1)}
+ =D^{-1}\bigl(\vect b-(L+U)\vect{x}^{(k)}\bigr).
+\]
+The order in which the equations are examined is irrelevant, since the Jacobi method treats them independently. That is, we prepare the vector $\vect x^{(k+1)}$ only using $\vect x^{(k)}$, or iterating in batches, only with the information from the previous iteration. For this reason, the Jacobi method is also known as the \textbf{method of simultaneous corrections}, since the updates could in principle be done simultaneously.
 
 \subsection{Gauss--Seidel Method}
-
-The Gauss--Seidel iteration is
-\[
- (D+L)\vect{x}^{(k+1)}
- =\vect b-U\vect{x}^{(k)}.
-\]
-Componentwise,
+Similar to the Jacobi method, we prepare the iteration equations by solving for $x_i$ in the $i$-th equation of our linear system. Componentwise,
 \[
  x_i^{(k+1)}=\frac{1}{a_{ii}}
  \left(
@@ -512,130 +555,283 @@ Componentwise,
      -\sum_{j>i}a_{ij}x_j^{(k)}
  \right).
 \]
-Newly computed values are used immediately, so Gauss--Seidel often converges faster than Jacobi.
+In matrix notation, the Gauss--Seidel iteration is
+\[
+ (D+L)\vect{x}^{(k+1)}
+ =\vect b-U\vect{x}^{(k)}.
+\]
+Unlike the Jacobi method where $\vect x^{(k)}$ is prepared in batches, each element of $\vect x^{(k)}$, $x^{(k)}_i$ depends on $x^{(k)}_j \; \forall j<i$; that is we iterate with the \textbf{latest information} instead of information from the previous iteration. 
+This is a \textbf{method of successive corrections}; it \textbf{replaces approximations by corresponding new ones} as soon as the latter are available.
+Note that since newly computed values are used immediately, so Gauss--Seidel often converges faster than Jacobi.
 
 \subsection{Successive Over-Relaxation}
-
-The SOR update is a weighted Gauss--Seidel correction:
+Modification of the Gauss-Seidel method with the relaxation parameter $\omega \; (0<\omega<2)$ is done to improve the rate of convergence. Componentwise, we only add weights as follows:
 \[
  x_i^{(k+1)}
- =(1-\omega)x_i^{(k)}
- +\frac{\omega}{a_{ii}}
+ =
+ \frac{\omega}{a_{ii}}
  \left(
  b_i-\sum_{j<i}a_{ij}x_j^{(k+1)}
      -\sum_{j>i}a_{ij}x_j^{(k)}
- \right),
+ \right)+(1-\omega)x_i^{(k)},
+\qquad 0<\omega<2.
 \]
-where $0<\omega<2$.
-When $\omega=1$, SOR reduces to Gauss--Seidel.  Values $0<\omega<1$ under-relax the iteration, while $1<\omega<2$ over-relax it.
+\begin{itemize}
+\item If $\omega=1$, SOR reduces to Gauss--Seidel.
+\item Values $0<\omega<1$ under-relax the iteration, which might help to dampen the iteration to achieve convergence if the Gauss-Seidel method diverges.
+\item Meanwhile, if the Gauss-Seidel already converges, values $1<\omega<2$ will help to speed up the convergence by over-relaxation.
+\end{itemize}
 
 \begin{definition}[Strict diagonal dominance]
-A square matrix $A=[a_{ij}]$ is strictly diagonally dominant by rows if
+A square matrix $A=[a_{ij}]$ of order $n$ is strictly diagonally dominant if
 \[
- |a_{ii}|>\sum_{j\ne i}|a_{ij}|,
- \qquad i=1,\ldots,n.
+ |a_{kk}| >\sum_{\substack{i=1\\ i\ne k}}^{n}|a_{ki}|,
+ \qquad k=1,2,\ldots,n.
 \]
+That is, A is strictly diagonally dominant if the absolute value of each diagonal entry is greater than the sum of the absolute values of the remaining entries in the same row.
 \end{definition}
 
 \begin{example}
 Show that
-\[
- A=\begin{pmatrix}
+\(
+ A=\begin{bmatrix}
  2&-7&4\\
  8&1&6\\
  -3&5&9
- \end{pmatrix}
-\]
+ \end{bmatrix}
+\)
 is not strictly diagonally dominant.
 \end{example}
 
 \begin{solution}[2.5cm]
-The first row already fails the test because
-\[
- |2|=2<|-7|+|4|=11.
-\]
-The second row also fails because $|1|<|8|+|6|$.  Hence $A$ is not strictly diagonally dominant.
+We see from the first and second row that
+\(
+ |2|<|-7|+|4|=11
+\)
+and $|1|<|8|+|6|=14$. 
+Hence, $A$ is not strictly diagonally dominant.
 \end{solution}
 
-\begin{theorem}[Convergence under diagonal dominance]
-If $A$ is strictly diagonally dominant, then the Jacobi and Gauss--Seidel iterations converge to the unique solution of $A\vect{x}=\vect b$ for every initial vector $\vect{x}^{(0)}$.
+\begin{theorem}[Convergence of the Iterative Methods]
+If a square matrix $A$ is strictly diagonally dominant, then the Jacobi and Gauss--Seidel approximations to the solution of the linear system $A\vect x = \vect b$ both converge to the exact solution for all choices of the initial approximation or guess, $\vect{x}^{(0)}$.
 \end{theorem}
 
-A common stopping test is
+\noindent
+Before we finally demonstrate how to execute these iterative methods in practice, we need to define a termination criterion. For these methods in this course, we commonly stop the computation when
 \[
- \max_i|x_i^{(k+1)}-x_i^{(k)}|<\varepsilon.
+    \max_i|x_i^{(k+1)}-x_i^{(k)}|<\epsilon, 
+    \quad \text{where } \epsilon \text{ is the pre-specified stopping criterion}.
 \]
-A residual test such as $\norm{\vect b-A\vect{x}^{(k)}}_\infty<\varepsilon$ is often more informative because it measures how well the computed vector satisfies the original equations.
+In practice however, a residual test such as $\norm{\vect b-A\vect{x}^{(k)}}<\epsilon$ may also be considered because it measures how well the computed vector satisfies the original equations.
 
 \begin{example}
-Use the Jacobi method, starting from $\vect{x}^{(0)}=\vect0$, to solve
+Use the \textbf{Jacobi method}, to solve
 \[
 \begin{aligned}
-20x_1+x_2-x_3&=17,\\
-x_1-10x_2+x_3&=13,\\
--x_1+x_2+10x_3&=18.
+20x_1+x_2-x_3&=17\\
+x_1-10x_2+x_3&=13\\
+-x_1+x_2+10x_3&=18
 \end{aligned}
 \]
-Stop when every component changes by less than $0.0002$.
+Iterate until $|x_i^{[p+1]}-x_i^{[p]}| < 0.0002$, for all $i$. Prepare all the computations in 5 decimal places.
 \end{example}
 
 \begin{solution}[8.0cm]
-The iteration equations are
 \[
- x_1^{(k+1)}=\frac{17-x_2^{(k)}+x_3^{(k)}}{20},
+ x_1^{[k+1]}=\frac{17-x_2^{[k]}+x_3^{[k]}}{20},
+ \quad
+ x_2^{[k+1]}=\frac{13-x_1^{[k]}-x_3^{[k]}}{-10},
+ \quad
+ x_3^{[k+1]}=\frac{18+x_1^{[k]}-x_2^{[k]}}{10}.
 \]
-\[
- x_2^{(k+1)}=\frac{x_1^{(k)}+x_3^{(k)}-13}{10},
- \qquad
- x_3^{(k+1)}=\frac{18+x_1^{(k)}-x_2^{(k)}}{10}.
-\]
-The iterates are
-\[
-\begin{array}{c|rrr}
-\toprule
-k&x_1^{(k)}&x_2^{(k)}&x_3^{(k)}\\
-\midrule
-0&0&0&0\\
-1&0.85000&-1.30000&1.80000\\
-2&1.00500&-1.03500&2.01500\\
-3&1.00250&-0.99800&2.00400\\
-4&1.00010&-0.99935&2.00005\\
-5&0.99997&-0.99998&1.99994\\
-6&1.00000&-1.00001&2.00000\\
-\bottomrule
-\end{array}
-\]
-At iteration $6$ all changes are below $0.0002$.  Thus
-\[
- \vect{x}\approx(1,-1,2)\T.
-\]
+Let our initial guess be: $x_1^{[0]}=x_2^{[0]}=x_3^{[0]}=0$. Then
+
+\smallskip
+\(\displaystyle
+x_1^{[1]}=\frac{17}{20}=0.85000, \quad x_2^{[1]}=-\frac{13}{10}=-1.30000, \quad x_3^{[1]}=\frac{18}{10}=1.80000.
+\)
+
+\smallskip
+\(
+|x_1^{[1]} - x_1^{[0]}| = |0.85000-0| = 0.85 \geq 0.0002.
+\)
+
+\bigskip
+\(\displaystyle
+x_1^{[2]}=\frac{17-(-1.3)+1.8}{20}=1.00500, \quad x_2^{[2]}=-\frac{13-0.85-1.8}{10}=-1.03500,\)
+
+\smallskip
+\(\displaystyle x_3^{[2]}=\frac{18+0.85-(-1.3)}{10}=2.01500.
+\)
+
+\smallskip\(
+|x_1^{[2]} - x_1^{[1]}| = |1.00500-0.85000| = 0.15500 \geq 0.0002.
+\)
+
+\bigskip
+\(\displaystyle
+x_1^{[3]}=\frac{17-(-1.035)+2.015}{20}=1.00250, \quad x_2^{[3]}=-\frac{13-1.005-2.015}{10}=-0.99800,\)
+
+\smallskip
+\(\displaystyle x_3^{[3]}=\frac{18+1.005-(-1.035)}{10}=2.00400.
+\)
+
+\smallskip\(
+|x_1^{[3]} - x_1^{[2]}| = |1.00250-1.00500| = 0.0025 \geq 0.0002.
+\)
+
+\bigskip
+\(\displaystyle
+x_1^{[4]}=\frac{17-(-0.998)+2.004}{20}=1.00010, \quad x_2^{[4]}=-\frac{13-1.0025-2.004}{10}=-0.99935,\)
+
+\smallskip
+\(\displaystyle x_3^{[4]}=\frac{18+1.0025-(-0.998)}{10}=2.00005.
+\)
+
+\smallskip\(
+|x_1^{[4]} - x_1^{[3]}| = |1.00010-1.00250| = 0.00240 \geq 0.0002.
+\)
+
+\bigskip
+\(\displaystyle
+x_1^{[5]}=\frac{17-(-0.99935)+2.00005}{20}=0.99997, \)
+
+\smallskip
+\(\displaystyle x_2^{[5]}=-\frac{13-1.0001-2.00005}{10}=-0.99999,\)
+
+\smallskip
+\(\displaystyle x_3^{[5]}=\frac{18+1.00010-(-0.99935)}{10}=1.99994.
+\)
+
+\smallskip\(
+|x_1^{[5]} - x_1^{[4]}| = |0.99997-1.00010| = 0.00013 < 0.0002.
+\)
+
+\smallskip\(
+|x_2^{[5]} - x_2^{[4]}| = |-0.99998-(-0.99935)| = 0.00063 \geq 0.0002.
+\)
+
+\bigskip
+\(\displaystyle
+x_1^{[6]}=\frac{17-(-0.99999)+1.99994}{20}=1.00000, \)
+
+\smallskip
+\(\displaystyle x_2^{[6]}=-\frac{13-0.99997-1.99994}{10}=-1.00000,\)
+
+\smallskip
+\(\displaystyle x_3^{[6]}=\frac{18+0.99997-(-0.99999)}{10}=2.00000.
+\)
+
+\smallskip\(
+|x_1^{[6]} - x_1^{[5]}| = |1.00000-0.99997| = 0.00003 < 0.0002.
+\)
+
+\smallskip\(
+|x_2^{[6]} - x_2^{[5]}| = |-1-(-0.99998)| = 0.00002 < 0.0002.
+\)
+
+\smallskip\(
+|x_3^{[6]} - x_3^{[5]}| = |2.00000-1.99994| = 0.00006 < 0.0002.
+\)
+
+\medskip
+\noindent
+Hence, $x_1 = 1, x_2 = -1, x_3 =2$.
 \end{solution}
 
 \begin{example}
-Solve the same system by the Gauss--Seidel method with the same initial vector and stopping criterion.
+Redo the previous example but by using the Gauss--Seidel method.
 \end{example}
 
 \begin{solution}[6.5cm]
-Using the newest available values gives
 \[
-\begin{array}{c|rrr}
-\toprule
-k&x_1^{(k)}&x_2^{(k)}&x_3^{(k)}\\
-\midrule
-0&0&0&0\\
-1&0.85000&-1.21500&2.00650\\
-2&1.01108&-0.99824&2.00093\\
-3&0.99996&-0.99991&1.99999\\
-4&0.99999&-1.00000&2.00000\\
-\bottomrule
-\end{array}
+ x_1^{[k+1]}=\frac{17-x_2^{[k]}+x_3^{[k]}}{20},
+ \quad
+ x_2^{[k+1]}=\frac{13-x_1^{[k+1]}-x_3^{[k]}}{-10},
+ \quad
+ x_3^{[k+1]}=\frac{18+x_1^{[k+1]}-x_2^{[k+1]}}{10}.
 \]
-The tolerance is met after four iterations, so
-$\vect{x}\approx(1,-1,2)\T$.
+Let our initial guess be: $x_1^{[0]}=x_2^{[0]}=x_3^{[0]}=0$. Then
+
+\smallskip
+\(\displaystyle
+x_1^{[1]}=\frac{17}{20}=0.85000, \quad x_2^{[1]}=-\frac{13-0.85}{10}=-1.21500, \)
+
+\smallskip
+\(\displaystyle x_3^{[1]}=\frac{18+0.85-(-1.215)}{10}=2.00650.\)
+
+\smallskip
+\(
+|x_1^{[1]} - x_1^{[0]}| = |0.85000-0| = 0.85 \geq 0.0002.
+\)
+
+\bigskip
+\(\displaystyle
+x_1^{[2]}=\frac{17-(-1.215)+2.0065}{20}=1.01108, \quad x_2^{[2]}=-\frac{13-1.01108-2.0065}{10}=-0.99824,\)
+
+\smallskip
+\(\displaystyle x_3^{[2]}=\frac{18+1.01108-(-0.99824)}{10}=2.00093.
+\)
+
+\smallskip\(
+|x_1^{[2]} - x_1^{[1]}| = |1.01108-0.85000| = 0.16108 \geq 0.0002.
+\)
+
+\bigskip
+\(\displaystyle
+x_1^{[3]}=\frac{17-(-0.99824)+2.00093}{20}=0.99996, \)
+
+\smallskip
+\(\displaystyle x_2^{[3]}=-\frac{13-0.99996-2.00093}{10}=-0.99991,\)
+
+\smallskip
+\(\displaystyle x_3^{[3]}=\frac{18+0.99996-(-0.99991)}{10}=1.99999
+\)
+
+\smallskip\(
+|x_1^{[3]} - x_1^{[2]}| = |1.01108-0.99996| = 0.01112 \geq 0.0002.
+\)
+
+\bigskip
+\(\displaystyle
+x_1^{[4]}=\frac{17-(-0.99991)+1.99999}{20}=1.00000, \quad x_2^{[4]}=-\frac{13-1-1.99999}{10}=-1.00000,\)
+
+\smallskip
+\(\displaystyle x_3^{[4]}=\frac{18+1-(-1)}{10}=2.00000.
+\)
+
+\smallskip\(
+|x_1^{[4]} - x_1^{[3]}| = |1.00000-0.99996| = 0.00004 < 0.0002.
+\)
+
+\smallskip\(
+|x_2^{[4]} - x_2^{[3]}| = |-1.00000-(-0.99991)| = 0.00009 < 0.0002.
+\)
+
+\smallskip\(
+|x_3^{[4]} - x_3^{[3]}| = |2.00000-1.99999| = 0.00001 < 0.0002.
+\)
+
+%\[
+%\begin{array}{c|rrr}
+%\toprule
+%k&x_1^{(k)}&x_2^{(k)}&x_3^{(k)}\\
+%\midrule
+%0&0&0&0\\
+%1&0.85000&-1.21500&2.00650\\
+%\midrule
+%2&1.01108&-0.99824&2.00093\\
+%3&0.99996&-0.99991&1.99999\\
+%4&0.99999&-1.00000&2.00000\\
+%\bottomrule
+%\end{array}
+%\]
+\medskip \noindent
+Hence, $x_1 = 1, x_2 = -1, x_3 = 2$.
 \end{solution}
 
 \begin{example}
-Use two SOR iterations with $\omega=1.25$ and $\vect{x}^{(0)}=\vect0$ for
+Use two iterations of \textbf{Successive Over-relaxation (SOR) method} to solve
 \[
 \begin{aligned}
 3x_1-x_2+x_3&=-1,\\
@@ -643,43 +839,74 @@ Use two SOR iterations with $\omega=1.25$ and $\vect{x}^{(0)}=\vect0$ for
 x_1-x_2+3x_3&=-7.
 \end{aligned}
 \]
+with $\omega = 1.25$ and initial approximation $x_1^{[0]}=0,x_2^{[0]}=0,x_3^{[0]}=0$.
 \end{example}
 
 \begin{solution}[5.5cm]
-The first SOR sweep gives
-\[
- \vect{x}^{(1)}
- =(-0.41667,\ 2.74306,\ -1.60012)\T.
-\]
-Using these values in the second sweep gives
-\[
- \vect{x}^{(2)}
- =(1.49715,\ 2.18800,\ -2.22878)\T.
-\]
-Thus after two iterations,
-\[
- x_1\approx1.4971,
- \qquad x_2\approx2.1880,
- \qquad x_3\approx-2.2288.
-\]
+With $\omega=1.25$, we have:
+
+\smallskip
+\noindent
+\(\displaystyle
+x_1^{[k+1]}=\frac{1.25}{3}(-1+x_2^{[k]}-x_3^{[k]})-0.25x_1^{[k]}, 
+\quad x_2^{[k+1]}=\frac{1.25}{3}(7+x_1^{[k+1]}+x_3^{[k]})-0.25x_2^{[k]},
+\)
+
+\smallskip \noindent
+\(\displaystyle x_3^{[k+1]}=\frac{1.25}{3}(-7-x_1^{[k+1]}+x_2^{[k+1]})-0.25x_3^{[k]}.\)
+
+\noindent Then
+
+\smallskip
+\(\displaystyle
+x_1^{[1]}=\frac{1.25}{3}(-1)-0=-0.4167, \quad x_2^{[1]}=\frac{1.25}{3}(7-0.4167)-0=2.7431,
+\)
+
+\smallskip
+\(\displaystyle
+x_3^{[1]}=\frac{1.25}{3}(-7-(-0.4167)+2.7431)-0=-1.6001.
+\)
+
+\bigskip
+\(\displaystyle
+x_1^{[2]}=\frac{1.25}{3}(-1+2.7431-(-1.6001))-0.25(-0.4167)=1.4972, \)
+
+\smallskip
+\(\displaystyle x_2^{[2]}=\frac{1.25}{3}(7+1.4972-1.6001)-0.25(2.7431)=2.1880,
+\)
+
+\smallskip
+\(\displaystyle
+x_1^{[3]}=\frac{1.25}{3}(-7-1.4972+2.1880)-0.25(-1.6001)=-2.2288.
+\)
+
+\medskip \noindent
+Hence, $x_1 = 1.4972, x_2 = 2.188, x_3 = -2.2288$.
 \end{solution}
 
 \subsection{Conjugate Gradient Method}
-
-For a symmetric positive-definite matrix $A$, solving $A\vect{x}=\vect b$ is equivalent to minimising
+The Conjugate Gradient Method is a popular iterative method for solving a sparse system. Consider a quadratic form and its gradient:
 \[
- \phi(\vect{x})=\frac12\vect{x}\T A\vect{x}-\vect{x}\T\vect b.
+f(\vect x) = \frac12 \vect x^TA \vect x - \vect x^T \vect b,
+\qquad \nabla f(\vect x) = \frac12 (A^T\vect x + A\vect x) - \vect b.
 \]
-The conjugate gradient method constructs mutually $A$-conjugate search directions and, in exact arithmetic, reaches the exact solution in at most $n$ steps.
+If $A$ is symmetric, then $\nabla f(\vect x) = A\vect x - \vect b$.
+Therefore, $f(\vect x)$ has a critical point at $\vect x$ if $A\vect x = \vect b$. Thus, if $A$ is a positive, definite, and symmetric, then we can solve $A\vect x = \vect b$ by minimising $f(x)$.
+
+In Machine Learning, the method of steepest descent (or more widely known as gradient descent) is an another algorithm used to minimise a loss function $f(\vect x)$. 
+But it converges much more slowly towards to exact solution.
+On the other hand, the conjugate gradient method is able to reach the \textbf{exact solution} in at most $\mathbf{n}$ steps (given $A$ is a square matrix of order $n$).
+\textbf{This section will be rewritten in the future due to having too many gaps in understanding.}
+%On the other hand, the conjugate gradient method constructs mutually $A$-conjugate search directions and, in exact arithmetic, reaches the exact solution in at most $n$ steps.
 
 \begin{algorithm}[Conjugate gradient]
-Choose $\vect{x}_0$.  Set
+Start with an initial approximation $\vect{x}_0$. Then
 \[
- \vect r_0=\vect b-A\vect{x}_0,
+ 1.\;\vect r_0=\vect b-A\vect{x}_0,
  \qquad
- \vect p_0=\vect r_0.
+ 2.\;\mathbf{P}_0=\vect r_0.
 \]
-For $k=0,1,2,\ldots$, compute
+For $k=0,1,2,\ldots,n$, compute
 \[
  \alpha_k=\frac{\vect r_k\T\vect r_k}{\vect p_k\T A\vect p_k},
  \qquad
@@ -728,78 +955,85 @@ The residual after the third step is zero to round-off accuracy, giving
 
 \section{Eigenvalues and Eigenvectors}
 
-\begin{definition}[Eigenvalue and eigenvector]
-A scalar $\lambda$ is an eigenvalue of an $n\times n$ matrix $A$ if there exists a nonzero vector $\vect v$ such that
+\begin{definition}[Eigenvalues and Eigenvectors]
+A scalar $\lambda$ is an eigenvalue of an $n\times n$ matrix $A$ if there exists a nonzero vector $\vect v \in \mathbb{R}^n$ such that
 \[
  A\vect v=\lambda\vect v.
 \]
-The vector $\vect v$ is an eigenvector corresponding to $\lambda$.
+The nonzero vector $\vect v$ is an eigenvector corresponding to $\lambda$.
 \end{definition}
 
-Eigenvalues satisfy the characteristic equation
-\[
+\noindent
+Note that eigenvalues satisfy the characteristic equation
+\(
  \det(A-\lambda I)=0.
-\]
-Once $\lambda$ is known, its eigenvectors are the nonzero solutions of
+\)
+Once $\lambda$ is known, its corresponding eigenvectors are the nonzero solutions of
 $(A-\lambda I)\vect v=\vect0$.
 
 \begin{example}
 For
 \[
- A=\begin{pmatrix}4&1\\3&2\end{pmatrix},
+ A=\begin{bmatrix}4&1\\3&2\end{bmatrix},
  \qquad
- \vect v=\begin{pmatrix}1\\1\end{pmatrix},
+ \vect v=\begin{bmatrix}1\\1\end{bmatrix},
 \]
-verify that $\vect v$ is an eigenvector and find its eigenvalue.
+verify that $\vect v$ is an eigenvector of $A$ and find its corresponding eigenvalue.
 \end{example}
 
 \begin{solution}[2.2cm]
 \[
  A\vect v
- =\begin{pmatrix}5\\5\end{pmatrix}
- =5\begin{pmatrix}1\\1\end{pmatrix}.
+ =\begin{bmatrix}4&1\\3&2\end{bmatrix}\begin{bmatrix}1\\1\end{bmatrix}
+ =\begin{bmatrix}5\\5\end{bmatrix}
+ =5\begin{bmatrix}1\\1\end{bmatrix}.
 \]
 Hence $\vect v$ is an eigenvector corresponding to $\lambda=5$.
 \end{solution}
 
-\subsection{Gershgorin Discs}
+\subsection{Gerschgorin Discs}
 
-\begin{theorem}[Gershgorin's theorem]
-Every eigenvalue of $A=[a_{ij}]$ lies in at least one disc
+\begin{theorem}[Gercshgorin's theorem]
+The eigenvalues of an $n\times n$ matrix $A$ lie in the union of $n$ discs
 \[
- \abs{z-a_{ii}}\le r_i,
- \qquad
- r_i=\sum_{j\ne i}|a_{ij}|.
+ \abs{\lambda-a_{ii}}\le r_i,
+ \quad
+ r_i=\sum_{j\ne i}|a_{ij}| = |a_{i1}| + \dots + |a_{i,i-1}| + |a_{i,i+1}| + \dots + |a_{in}|.
 \]
 \end{theorem}
 
-For a real symmetric matrix, all eigenvalues are real, so the discs may be viewed as intervals on the real line.
+Gerschgorin's Theorem (or Gershgorin's Theorem) is a finding that is common taught in Complex Analysis that is used to estimate the location of the eigenvalues of a matrix $A$. For a general square matrix, the union of the $n$ disks would be drawn as circles on the complex plane. However, for a real symmetric matrix, all eigenvalues are real, so the discs may be viewed as intervals on the real line.
 
 \begin{example}
-Find Gershgorin intervals for
+Find Gerschgorin intervals corresponding to
 \[
- A=\begin{pmatrix}
+ A=\begin{bmatrix}
 7&4&-4\\
 4&-8&-1\\
 -4&-1&-8
-\end{pmatrix}.
+\end{bmatrix}.
 \]
 \end{example}
 
 \begin{solution}[3.8cm]
 The row radii are
 \[
- r_1=8,
- \qquad r_2=5,
- \qquad r_3=5.
+ r_1=|4|+|-4|=8,
+ \qquad r_2=|4|+|-1|=5,
+ \qquad r_3=|-4|+|-1|=5.
 \]
-Thus the intervals are
+Thus we have
 \[
- [-1,15],
- \qquad[-13,-3],
- \qquad[-13,-3].
+|\lambda_1 - 7| \leq 8 \implies -8+7 \leq \lambda_1 \leq 8+1 \implies -1 \leq \lambda_1 \leq 15.
 \]
-The first interval is disjoint from the other two, so one eigenvalue lies in $[-1,15]$ and the remaining two lie in $[-13,-3]$.
+\[
+|\lambda_2 - (-8)| \leq 5 \implies -5-8 \leq \lambda_1 \leq -5+8 \implies -13 \leq \lambda_2 \leq -3.
+\]
+\[
+|\lambda_3 - (-8)| \leq 5 \implies -5-8 \leq \lambda_3 \leq -5+8 \implies -13 \leq \lambda_3 \leq -3.
+\]
+
+\(\displaystyle \therefore \text{The eigenvalues of A, } \lambda \in [-13, -3] \cup [-1,15]\)
 \end{solution}
 
 \subsection{Power Method}
@@ -810,67 +1044,125 @@ An eigenvalue $\lambda_1$ is dominant if
  |\lambda_1|>|\lambda_j|
  \qquad\text{for every }j\ne1.
 \]
+That is if the absolute value of $\lambda$ is larger than the absolute values of all the other remaining eigenvalues. An eigenvector corresponding to the dominant eigenvalue is thus also called a dominant eigenvector.
 \end{definition}
 
-If $A$ is diagonalizable and the initial vector has a nonzero component in the dominant eigendirection, then
-\[
- A^k\vect{x}_0
-\]
-becomes increasingly parallel to a dominant eigenvector.  The corresponding eigenvalue may be estimated by the Rayleigh quotient
-\[
- \rho(\vect x)=\frac{\vect{x}\T A\vect{x}}{\vect{x}\T\vect{x}}.
-\]
-The convergence rate is governed chiefly by $|\lambda_2/\lambda_1|$.
-
 \begin{example}
-Determine whether a dominant eigenvalue exists in each case:
+We explore the concept of dominant eigenvalues in the following cases:
 \begin{enumerate}[label=(\alph*),leftmargin=2.7em]
-\item $-5,4,2,-3$;
-\item $2,-5,5$.
+\item A $4\times 4$ matrix A with eigenvalues $\lambda=-5,4,2,-3$ has dominant eigenvalue $\lambda = -5$ since 
+\[\lvert -5\rvert > \lvert 4\rvert,\quad
+\lvert -5\rvert > \lvert 2\rvert,\quad
+\lvert -5\rvert > \lvert -3\rvert.\]
+\item A $3\times 3$ matrix $A$ with eigenvalues $\lambda=2,-5,5$ has no dominant eigenvalue since \[\lvert -5 \rvert \ngtr \lvert 5 \rvert.\]
 \end{enumerate}
 \end{example}
 
-\begin{solution}[2.2cm]
-In (a), $-5$ is dominant because its modulus is strictly largest.  In (b), both $-5$ and $5$ have modulus $5$, so no unique dominant eigenvalue exists.
-\end{solution}
+\begin{theorem}[The Power Method or Direct Iteration Method]
+If an $n\times n$ matrix $A$ is diagonalizable (i.e. having $n$ distinct eigenvalues) and the initial guess for the dominant eigenvector $\vect v$, $\vect x_0$ has a nonzero component in the dominant eigendirection, then
+\[
+\vect x_k = A^k\vect{x}_0 = A \vect x_{k-1}
+\]
+is a good approximation to a dominant eigenvector when $k$ is sufficiently large.
+\end{theorem}
+
+\begin{enumerate}[label=(\alph*)]
+\item The dominant eigenvalue may be approximated using the current approximation to the dominant eigenvector $\vect x_k = A^k\vect x_0$ by the \textbf{Rayleigh quotient}
+\[
+\lambda \approx \frac{\vect{x}_k^T A\vect{x}_k}{\vect{x}_k^T\vect{x}_k} = \frac{A\vect x_k \cdot \vect x_k}{\vect x_k \cdot \vect x_k}.
+\]
+\item The \textbf{convergence rate} depends on the ratios of the other remaining eigenvectors to the dominant eigenvector
+\[
+\frac{\lambda_2}{\lambda}, \dots , \frac{\lambda_n}{\lambda}.
+\]
+The smaller the ratios, the faster the rate of convergence.
+\end{enumerate}
+
 
 \begin{example}
 Let
 \[
- A=\begin{pmatrix}4&-2\\3&-1\end{pmatrix},
+ A=\begin{bmatrix}4&-2\\3&-1\end{bmatrix},
  \qquad
- \vect{x}_0=\begin{pmatrix}1\\0\end{pmatrix}.
+ \vect{x}_0=\begin{bmatrix}1\\0\end{bmatrix}.
 \]
-Perform six power iterations and estimate the dominant eigenpair.
+Use the power method to approximate the dominant eigenvalue and a corresponding eigenvector with the initial guess given above. Prepare 6 iterations.
 \end{example}
 
 \begin{solution}[6.8cm]
-Successive products are
-\[
-\begin{aligned}
-\vect{x}_1&=(4,3)\T,\\
-\vect{x}_2&=(10,9)\T,\\
-\vect{x}_3&=(22,21)\T,\\
-\vect{x}_4&=(46,45)\T,\\
-\vect{x}_5&=(94,93)\T,\\
-\vect{x}_6&=(190,189)\T.
-\end{aligned}
-\]
-The direction approaches $(1,1)\T$.  The Rayleigh quotient at the sixth iterate is
-\[
- \rho(\vect{x}_6)
- =\frac{\vect{x}_6\T A\vect{x}_6}{\vect{x}_6\T\vect{x}_6}
- \approx2.0132.
-\]
-Thus the dominant eigenvalue is approximately $2.0132$ and a corresponding eigenvector is approximately $(190,189)\T$.  The exact dominant eigenpair is $\lambda=2$ with eigenvector $(1,1)\T$.
+\(\vect{x}_1=A\vect x_0 = \begin{bmatrix}4&-2\\3&-1\end{bmatrix}
+\begin{bmatrix}1\\0\end{bmatrix}=\begin{bmatrix}4\\3\end{bmatrix}\)
+
+\smallskip \noindent
+\(\vect{x}_2=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}4\\3\end{bmatrix}
+=\begin{bmatrix}10\\9\end{bmatrix}\)
+
+\smallskip \noindent
+\(\vect{x}_3=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}10\\9\end{bmatrix}
+=\begin{bmatrix}22\\21\end{bmatrix}\)
+
+\smallskip \noindent
+\(\vect{x}_4=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}22\\21\end{bmatrix}
+=\begin{bmatrix}46\\45\end{bmatrix}\)
+
+\smallskip \noindent
+\(\vect{x}_5=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}46\\45\end{bmatrix}
+=\begin{bmatrix}94\\93\end{bmatrix}\)
+
+\smallskip \noindent
+\(\vect{x}_6=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}94\\93\end{bmatrix}
+=\begin{bmatrix}190\\189\end{bmatrix}\)
+
+\begin{flalign*}
+\therefore \text{The dominant eigenvalue, }\lambda
+&\approx
+\frac{\mathbf{x}_6^T A\mathbf{x}_6}
+     {\mathbf{x}_6^T\mathbf{x}_6}=
+\frac{
+\begin{bmatrix}190\\189\end{bmatrix}^{T}
+\begin{bmatrix}4&-2\\3&-1\end{bmatrix}
+\begin{bmatrix}190\\189\end{bmatrix}
+}{
+\begin{bmatrix}190\\189\end{bmatrix}^{T}
+\begin{bmatrix}190\\189\end{bmatrix}
+}
+=
+\frac{
+\begin{bmatrix}190&189\end{bmatrix}
+\begin{bmatrix}382\\381\end{bmatrix}
+}{
+190^2+189^2
+} &&\\[4pt]
+&=
+\frac{190(382)+189(381)}
+     {190^2+189^2}
+=2.0132. &&
+\end{flalign*}
 \end{solution}
 
-To prevent entries from growing too large, scale after every multiplication:
+\noindent
+We can observe some key facts from the previous example:
+\begin{enumerate}
+\item It is clear that the vectors $x_m$ are getting closer and closer to scalar multiples of
+    $\begin{bmatrix}1\\1\end{bmatrix}$ which is a dominant eigenvector of $A$. By checking, we also see that the corresponding dominant eigenvalue, $\lambda = 2$.
+\item The convergence is rather slow.
+\item The power method often generates a sequence of vectors $\{A^k\vect x_0\}$ that have inconveniently large entries.
+\end{enumerate}
+
+\begin{theorem}[Power Method with Scaling]
+The large entries discussed earlier can be avoided by scaling the iterative vector at each step. 
+
+\smallskip
+\noindent
+That is, we multiply
+\(\displaystyle
+A\vect{x}_{k-1} = [x_1, \dots, x_n]^T \text{ by }
+\frac1{\max\{|x_{1}|,\dots,|x_{n}|\}}\) to get 
 \[
- \vect y_k=A\vect{x}_{k-1},
- \qquad
- \vect{x}_k=\frac{\vect y_k}{\max_i|y_{k,i}|}.
+    \vect x_{k+1} = \frac1{\max\{|x_1|,\dots,|x_n|\}}\begin{bmatrix}x_1\\ \vdots \\ x_n\end{bmatrix}.
 \]
+
+\end{theorem}
 
 \begin{example}
 Repeat the previous example using power iteration with scaling.
