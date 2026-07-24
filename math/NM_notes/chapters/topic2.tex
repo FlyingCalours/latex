@@ -1033,7 +1033,7 @@ Thus we have
 |\lambda_3 - (-8)| \leq 5 \implies -5-8 \leq \lambda_3 \leq -5+8 \implies -13 \leq \lambda_3 \leq -3.
 \]
 
-\(\displaystyle \therefore \text{The eigenvalues of A, } \lambda \in [-13, -3] \cup [-1,15]\)
+\(\displaystyle \therefore \text{The eigenvalues of A, } \lambda \in [-13, -3] \cup [-1,15]\).
 \end{solution}
 
 \subsection{Power Method}
@@ -1154,35 +1154,82 @@ The large entries discussed earlier can be avoided by scaling the iterative vect
 
 \smallskip
 \noindent
-That is, we multiply
+That is, we first compute
 \(\displaystyle
-A\vect{x}_{k-1} = [x_1, \dots, x_n]^T \text{ by }
-\frac1{\max\{|x_{1}|,\dots,|x_{n}|\}}\) to get 
+\vect y_{k} = A\vect{x}_{k-1} = [y_1, \dots, y_n]^T \text{ and multiply it by }
+\frac1{ \max \{|y_{1}|,\dots,|y_{n}|\}}\) to get
 \[
-    \vect x_{k+1} = \frac1{\max\{|x_1|,\dots,|x_n|\}}\begin{bmatrix}x_1\\ \vdots \\ x_n\end{bmatrix}.
+    \vect x_{k+1} = \frac1{\max\{|A\vect x_k|\}}A\vect x_{k}.
 \]
-
 \end{theorem}
+We repeat this process to obtain scaled-down vectors, and the approximate dominant eigenvalue (at step $k$) is computed using the Rayleigh quotient:
+\[
+\lambda (k) = \frac{\vect x_k^T A \vect x_k}{\vect x_k^T \vect x_k} = \frac{A\vect x_k \cdot \vect x_k}{\vect x_k \cdot \vect x_k}.
+\]
+We will \textbf{STOP} the computation at the $k$-th step if the \textbf{estimated relative error} or \textbf{estimated percentage error} is low enough:
+\[
+\left| \frac{\lambda(k)-\lambda(k-1)}{\lambda(k)} \right| < \epsilon, \quad
+\text{ or } \quad \left| \frac{\lambda(k)-\lambda(k-1)}{\lambda(k)} \right| < \epsilon, \quad
+\text{ for a small } \epsilon.
+\]
 
 \begin{example}
 Repeat the previous example using power iteration with scaling.
 \end{example}
 
 \begin{solution}[3.6cm]
-After six scaled iterations,
+\(\displaystyle
+A\vect x_0 = \begin{bmatrix}4&-2\\3&-1\end{bmatrix}
+\begin{bmatrix}1\\0\end{bmatrix}=\begin{bmatrix}4\\3\end{bmatrix},
+\quad \vect x_1 = \frac14 \begin{bmatrix}4\\3\end{bmatrix}=\begin{bmatrix}1\\0.75\end{bmatrix}\)
+
+\smallskip \noindent
+\(\displaystyle
+A\vect x_1=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}1\\0.75\end{bmatrix}
+=\begin{bmatrix}2.5\\2.25\end{bmatrix},
+\quad \vect x_2 = \frac1{2.5}\begin{bmatrix}2.5\\2.25\end{bmatrix} = \begin{bmatrix}1\\0.9\end{bmatrix}\)
+
+\smallskip \noindent
+\(\displaystyle
+A\vect x_2=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}1\\0.9\end{bmatrix}
+=\begin{bmatrix}2.2\\2.1\end{bmatrix},
+\quad \vect x_3 = \frac1{2.2}\begin{bmatrix}2.2\\2.1\end{bmatrix} = \begin{bmatrix}1\\0.9545\end{bmatrix}\)
+
+\smallskip \noindent
+\(\displaystyle
+A\vect x_3=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}1\\0.9545\end{bmatrix}
+=\begin{bmatrix}2.0910\\2.0455\end{bmatrix},
+\quad \vect x_4 = \frac1{2.0910}\begin{bmatrix}2.0910\\2.0455\end{bmatrix} = \begin{bmatrix}1\\0.9782\end{bmatrix}\)
+
+\smallskip \noindent
+\(\displaystyle
+A\vect x_4=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}1\\0.9782\end{bmatrix}
+=\begin{bmatrix}2.0436\\2.0218\end{bmatrix},
+\quad \vect x_5 = \frac1{2.0436}\begin{bmatrix}2.0436\\2.0218\end{bmatrix} = \begin{bmatrix}1\\0.9893\end{bmatrix}\)
+
+\smallskip \noindent
+\(\displaystyle
+A\vect x_5=\begin{bmatrix}4&-2\\3&-1\end{bmatrix}\begin{bmatrix}1\\0.9893\end{bmatrix}
+=\begin{bmatrix}2.0214\\2.0107\end{bmatrix},
+\quad \vect x_6 = \frac1{2.0214}\begin{bmatrix}2.0214\\2.0107\end{bmatrix} = \begin{bmatrix}1\\0.9947\end{bmatrix}\)
+
+\begin{flalign*}
+\lambda(6)&=\frac{A\vect x_6 \cdot \vect x_6}{\vect x_6 \cdot \vect x_6}
+=\frac{\begin{bmatrix}4 & -2\\3 & -1\end{bmatrix}\begin{bmatrix}1\\0.9947\end{bmatrix}\cdot\begin{bmatrix}1\\0.9947\end{bmatrix}}{\begin{bmatrix}1\\0.9947\end{bmatrix}\cdot\begin{bmatrix}1\\0.9947\end{bmatrix}}
+=\frac{\begin{bmatrix}2.0106\\2.0053\end{bmatrix}\cdot\begin{bmatrix}1\\0.9947\end{bmatrix}}{1^2+0.9947^2}\\
+&=\frac{2.0106 \cdot 1 + 2.0053 \cdot 0.9947}{1^2 + 0.9947^2}=2.0133.
+\end{flalign*}
+
+Hence, using the Power Method with Scaling, we obtain the dominant eigenvalue and an eigenvector of $A$ corresponding to the dominant eigenvalue:
 \[
- \vect{x}_6\approx(1,0.9947)\T.
+\lambda \approx 2.0133
+\qquad \vect x \approx \begin{bmatrix}1\\0.9947\end{bmatrix}.
 \]
-The Rayleigh quotient gives
-\[
- \lambda_{\max}\approx2.0133.
-\]
-Scaling changes only the size of the iterates, not their direction.
 \end{solution}
 
 \subsection{Inverse and Shifted Inverse Power Methods}
 
-If $A$ is nonsingular, the eigenvalues of $A^{-1}$ are $1/\lambda_i$.  Hence power iteration applied to $A^{-1}$ finds the eigenvalue of $A$ having smallest modulus.  In practice one solves
+If $A$ is nonsingular, the eigenvalues of $A^{-1}$ are $1/\lambda_i$.  Hence power iteration applied to $A^{-1}$ finds the eigenvalue of $A$ having smallest modulus. In practice one solves
 \[
  A\vect y_k=\vect{x}_{k-1}
 \]
